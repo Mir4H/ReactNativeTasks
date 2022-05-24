@@ -1,3 +1,3 @@
 # ReactNativeTasks
 
-Small tasks completed to learn React Native basics.
+Small tasks completed during a course of React Native basics.
