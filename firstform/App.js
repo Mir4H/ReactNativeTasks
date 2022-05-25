@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
 import type {Node} from 'react';
-import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Button, FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
 
 const App = () => {
-  const [pet, setPet] = useState("");
-  const [list, addPet] = useState([]);
-  const [age, setAge] = useState("");
-  const [list2, addAge] = useState([]);
+  const [pet, setPet] = useState();
+  const [age, setAge] = useState();
+  const [listOfPets, addPet] = useState([]);
 
   const petInputHandler = enteredText => {
     setPet(enteredText);
@@ -16,8 +15,7 @@ const App = () => {
   }
 
   const addPetToList=()=>{
-    addPet(list=>[...list, pet]);
-    addAge(list2=>[...list2, age]);
+    addPet(listOfPets=>[...listOfPets, {name:pet, age:age}]);
   }
 
 const clearValues=()=>{
@@ -28,15 +26,16 @@ const clearValues=()=>{
     <View style={styles.container}>
       <View style={styles.mainform}>
         <View style={styles.formstyle}>
-          <TextInput style={styles.textinput} value={pet} placeholder="Enter pet name" onChangeText={petInputHandler}/>
+          <TextInput style={styles.textinput} maxLength={30} value={pet} placeholder="Enter pet name" onChangeText={petInputHandler}/>
           <Button color="#38b058" title="OK" onPress={addPetToList} />
         </View>
         <View style={styles.formstyle}>
-          <TextInput style={styles.textinput} value={age} placeholder="Enter pet age" keyboardType='numeric' onChangeText={ageInputHandler}/>
+          <TextInput style={styles.textinput} maxLength={4} value={age} placeholder="Enter pet age" keyboardType='numeric' onChangeText={ageInputHandler}/>
           <Button color="gray" title="Cancel" onPress={clearValues}/>
         </View>
       </View>
-      {list.map((item, index)=>{return <Text style={styles.listText} key={index}>Name: {item} | Age: {list2[index]}</Text>})}
+      <View style={styles.titleText}><Text style={{ fontSize: 20 }}>List of Pets</Text></View>
+      <FlatList data={listOfPets} renderItem={({item, index})=><View style={styles.listText}><Text style={{ fontSize: 16 }} key={index}>{index+1}: {item.name} | {item.age}</Text></View>}/>
     </View>
   );
 };
@@ -44,7 +43,6 @@ const clearValues=()=>{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems:'center'
   },
   mainform: {
     alignItems: 'flex-start',
@@ -64,9 +62,18 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginBottom: 10,
   },
+  titleText: {
+    marginTop: 5,
+    alignItems: 'center',
+  },
   listText: {
-    fontSize: 16,
-    marginTop: 2,
+    marginTop: 3,
+    marginLeft: 20,
+    marginRight: 20,
+    borderColor:'gray',
+    padding: 2,
+    borderWidth:1,
+    backgroundColor:'#f0f7f6',
   }
 });
 
