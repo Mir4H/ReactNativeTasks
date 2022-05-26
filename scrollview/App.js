@@ -24,19 +24,19 @@ const App = () => {
   };
 
   const deleteItem = index => {
-    addFish(listOfFish=>listOfFish.filter((fish, id)=>id!=index));
+    addFish(listOfFish => listOfFish.filter((fish, id) => id != index));
   };
 
-  const FishList=()=>{
-    return (
-      listOfFish.map((item, index) => 
-    <TouchableOpacity key={index} onLongPress={() => deleteItem(index)}>
-      <View style={styles.listItemStyle}>
-        <Text style={{fontSize: 16}}>
-          {index + 1}: {item}
-        </Text>
-      </View>
-    </TouchableOpacity>));
+  const FishList = () => {
+    return listOfFish.map((item, index) => (
+      <TouchableOpacity key={index} onLongPress={() => deleteItem(index)}>
+        <View style={styles.listItemStyle}>
+          <Text style={{fontSize: 16}}>
+            {index + 1}: {item}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    ));
   };
 
   return (
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems:"center",
+    alignItems: 'center',
   },
   textinput: {
     backgroundColor: '#d6d6d6',
     borderColor: 'gray',
     borderWidth: 1,
-    width:'70%',
+    width: '70%',
   },
   buttonstyle: {
     width: '20%',
