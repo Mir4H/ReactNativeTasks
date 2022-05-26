@@ -13,13 +13,20 @@ import {
 const App = () => {
   const [fish, setFish] = useState();
   const [listOfFish, addFish] = useState([]);
+  const [updateID, setUpdateID] = useState(-1);
 
   const fishInputHandler = enteredText => {
     setFish(enteredText);
   };
 
   const addFishToList = () => {
-    addFish(listOfFish => [...listOfFish, fish]);
+    if (updateID != -1) {
+      listOfFish[updateID] = fish;
+      addFish(listOfFish);
+      setUpdateID(-1);
+    } else {
+      addFish(listOfFish => [...listOfFish, fish]);
+    }
     setFish('');
   };
 
@@ -27,9 +34,17 @@ const App = () => {
     addFish(listOfFish => listOfFish.filter((fish, id) => id != index));
   };
 
+  const updateItem = index => {
+    setUpdateID(index);
+    setFish(listOfFish[index]);
+  };
+
   const FishList = () => {
     return listOfFish.map((item, index) => (
-      <TouchableOpacity key={index} onLongPress={() => deleteItem(index)}>
+      <TouchableOpacity
+        key={index}
+        onLongPress={() => deleteItem(index)}
+        onPress={() => updateItem(index)}>
         <View style={styles.listItemStyle}>
           <Text style={{fontSize: 16}}>
             {index + 1}: {item}
