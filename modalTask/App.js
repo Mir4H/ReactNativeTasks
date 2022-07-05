@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import type {Node} from 'react';
+import FormView from './components/AddBoot';
 import {
   Button,
   FlatList,
@@ -8,6 +9,7 @@ import {
   Text,
   TextInput,
   View,
+  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 
@@ -44,54 +46,28 @@ const App = () => {
   const deleteItem = removeId => {
     addBoot(listOfBoots => listOfBoots.filter((boot, index) => index != removeId));
   };
-  const renderFish=({item, index})=>{
-    return (
-      <TouchableOpacity activeOpacity={0.8} onLongPress={()=>deleteItem(index)}>
-        <View style={styles.listText}><Text style={{ fontSize: 17 }} key={index}>{item.idBoot}: {item.typeBoot}</Text></View>
-      </TouchableOpacity>
-    );
-  }
+
  return (
     <View style={styles.container}>
       <Modal visible={visibility} animationType="fade">
-        <View style={styles.mainform}>
-          <View style={styles.formstyle}>
-            <TextInput
-              style={styles.textinput}
-              maxLength={4}
-              value={bootID}
-              placeholder="ID"
-              keyboardType="numeric"
-              onChangeText={idInputHandler}
-            />
-            <TextInput
-              style={styles.textinput2}
-              maxLength={30}
-              value={bootType}
-              placeholder="Boot Type"
-              onChangeText={typeInputHandler}
-            />
-          </View>
-          <View style={styles.formstyle}>
-            <View style={styles.buttonstyle}>
-              <Button color="gray" title="Cancel" onPress={cancelBoot} />
-            </View>
-            <View style={styles.buttonstyle}>
-              <Button color="#38b058" title="OK" onPress={addBootToList} />
-            </View>
-          </View>
-        </View>
+        <FormView bootID={bootID} bootType={bootType} idInput={idInputHandler} typeInput={typeInputHandler} cancel={cancelBoot} add={addBootToList}/>
       </Modal>
       <View style={styles.listStyle}>
       <View style={styles.buttonSt}>
         <Button color="#38b058" title='Add new boot' onPress={showInputView} />
         </View>
         <Text style={{fontSize: 20}}>List of Boots</Text>
-        <FlatList style={styles.flatliststyle}
-          keyExtractor={keyHandler}
-          data={listOfBoots}
-          renderItem={renderFish}
-        />
+        <ScrollView style={styles.scrollviewstyle}>
+        {listOfBoots.map((item, index) => (
+          <TouchableOpacity key={index} onLongPress={()=>deleteItem(index)}>
+          <View style={styles.listText}>
+            <Text style={{ fontSize: 17 }}>
+            {item.idBoot}: {item.typeBoot}
+            </Text>
+          </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
       </View>
     </View>
   );
@@ -103,37 +79,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width:"100%",
-  },
-  mainform: {
-    alignItems: 'flex-start',
-    width: '100%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  },
-  textinput: {
-    backgroundColor: '#d6d6d6',
-    width: '20%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  textinput2: {
-    backgroundColor: '#d6d6d6',
-    width: '70%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  formstyle: {
-    width: '100%',
-    flexDirection: 'row',
-    marginBottom: 10,
-    justifyContent: 'space-around',
-  },
-  buttonstyle: {
-    width: '30%',
   },
   buttonSt: {
     width: '80%',
@@ -151,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 2,
   },
-  flatliststyle:{
+  scrollviewstyle:{
     width:'80%',
     backgroundColor:'#BEBEBE',
   },
