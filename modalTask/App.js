@@ -11,6 +11,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 const App = () => {
@@ -26,8 +27,14 @@ const App = () => {
     setBootType(enteredNumb);
   }
   const addBootToList=()=>{
-    addBoot(listOfBoots=>[...listOfBoots, {idBoot:bootID, typeBoot:bootType}]);
-    setVisibility(false);
+    if (bootID.trim().length>0 && bootType.trim().length>0) {
+      addBoot(listOfBoots=>[...listOfBoots, {idBoot:bootID.trim(), typeBoot:bootType.trim()}]);
+      setBootType('');
+      setBootID('');
+      setVisibility(false);
+    } else {
+      Alert.alert("Boot not added!","One or both fields were empty.");
+    }
   }
 
   const keyHandler=(item, index)=>{
