@@ -61,7 +61,7 @@ const App = () => {
       </Modal>
       <View style={styles.listStyle}>
       <View style={styles.buttonSt}>
-        <Button color="#38b058" title='Add new boot' onPress={showInputView} />
+        <Button color="#38b058" title='Add boot' onPress={showInputView} />
         </View>
         <Text style={{fontSize: 20}}>List of Boots</Text>
         <ScrollView style={styles.scrollviewstyle}>
