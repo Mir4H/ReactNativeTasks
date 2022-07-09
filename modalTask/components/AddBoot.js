@@ -1,69 +1,87 @@
+import React, {useState} from 'react';
+import {Text, Modal, View, TextInput, Button, StyleSheet} from 'react-native';
 
-import React from 'react';
-import { Button, StyleSheet, Text, TextInput, View} from 'react-native';
+const AddBoot = (props) => {
+    const [bootID, setBootID] = useState('');
+    const [bootType, setBootType] = useState('');
+    
+    const idInputHandler = (enteredText) => {
+        setBootID(enteredText);
+      }
 
-const FormView=(props)=>{
-    return( 
-        <View style={styles.mainform}>
-          <View style={styles.formstyle}>
+    const typeInputHandler = (enteredNumb) => {
+        setBootType(enteredNumb);
+      }
+    const cancelBoot=()=>{
+        setBootType('');
+        setBootID('');
+        props.changeVisibility(false);
+      }
+
+    return(
+        <Modal visible={props.visibility}>
+          <View style={styles.mainform}>
+            <View style={styles.formstyle}>
             <TextInput
-              style={styles.textinput}
+              style={styles.idinput}
               maxLength={4}
-              value={props.bootID}
+              value={bootID}
+              onChangeText={idInputHandler}
               placeholder="ID"
-              keyboardType="numeric"
-              onChangeText={props.idInput}
             />
             <TextInput
-              style={styles.textinput2}
+              style={styles.typeinput}
               maxLength={30}
-              value={props.bootType}
+              value={bootType}
+              onChangeText={typeInputHandler}
               placeholder="Boot Type"
-              onChangeText={props.typeInput}
             />
+          </View>
           </View>
           <View style={styles.formstyle}>
             <View style={styles.buttonstyle}>
-              <Button color="gray" title="Cancel" onPress={props.cancel} />
+              <Button title="Cancel" onPress={cancelBoot} />
             </View>
             <View style={styles.buttonstyle}>
-              <Button color="#38b058" title="OK" onPress={props.add} />
+              <Button title="OK" onPress={()=>props.bootDataHandler(bootID, bootType)} />
             </View>
-          </View>
-        </View>
-    );
-}
+          </View>        
+        </Modal>
+      );
+    };
+
 const styles = StyleSheet.create({
-mainform: {
-    alignItems: 'flex-start',
-    width: '100%',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  },
-  textinput: {
-    backgroundColor: '#d6d6d6',
-    width: '20%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  textinput2: {
-    backgroundColor: '#d6d6d6',
-    width: '70%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  formstyle: {
-    width: '100%',
-    flexDirection: 'row',
-    marginBottom: 10,
-    justifyContent: 'space-around',
-  },
-  buttonstyle: {
-    width: '30%',
-  },
-});
-export default FormView;
+    mainform: {
+        alignItems: 'flex-start',
+        width: '100%',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+      },
+    idinput: {
+        backgroundColor: '#d6d6d6',
+        width: '20%',
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginTop: 20,
+        marginBottom: 10,
+      },
+    typeinput: {
+        backgroundColor: '#d6d6d6',
+        width: '70%',
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginTop: 20,
+        marginBottom: 10,
+      },
+    formstyle: {
+        width: '100%',
+        flexDirection: 'row',
+        marginBottom: 10,
+        justifyContent: 'space-around',
+      },
+    buttonstyle: {
+        width: '30%',
+      },
+  });
+
+  export default AddBoot;

@@ -1,81 +1,56 @@
 import React, {useState} from 'react';
-import type {Node} from 'react';
-import FormView from './components/AddBoot';
 import {
-  Button,
-  FlatList,
-  Modal,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  TextInput,
+  Button,
   ScrollView,
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import AddBoot from './components/AddBoot';
 
 const App = () => {
-  const [visibility, setVisibility] = useState(false);
-  const [bootID, setBootID] = useState();
-  const [bootType, setBootType] = useState();
-  const [listOfBoots, addBoot] = useState([]);
+  const [listOfBoots, addBootList] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const idInputHandler = enteredText => {
-    setBootID(enteredText);
-  }
-  const typeInputHandler = enteredNumb => {
-    setBootType(enteredNumb);
-  }
-  const addBootToList=()=>{
-    if (bootID.trim().length>0 && bootType.trim().length>0) {
-      addBoot(listOfBoots=>[...listOfBoots, {idBoot:bootID.trim(), typeBoot:bootType.trim()}]);
-      setBootType('');
-      setBootID('');
-      setVisibility(false);
+  const addBootToList = (id, type) => {
+    if (id.trim().length>0 && type.trim().length>0) {
+      addBootList(listOfBoots => [...listOfBoots, {id: id.trim(), type: type.trim()}]);
+      setModalVisible(false);      
     } else {
-      Alert.alert("Boot not added!","One or both fields were empty.");
+      Alert.alert("No boot added!", "One or both fields were empty.")
     }
-  }
-
-  const keyHandler=(item, index)=>{
-    return index.toString();
-  }
-
-  const showInputView=()=>{
-    setVisibility(true);
-  }
-
-  const cancelBoot=()=>{
-    setBootType('');
-    setBootID('');
-    setVisibility(false);
-  }
-  const deleteItem = removeId => {
-    addBoot(listOfBoots => listOfBoots.filter((boot, index) => index != removeId));
   };
 
- return (
+  const deleteBoot = removeId => {
+    addBootList(listOfBoots =>
+      listOfBoots.filter((boot, index) => index != removeId),
+    );
+  };
+  const showInputModal = () => {
+    setModalVisible(true);
+  };
+
+  return (
     <View style={styles.container}>
-      <Modal visible={visibility} animationType="fade">
-        <FormView bootID={bootID} bootType={bootType} idInput={idInputHandler} typeInput={typeInputHandler} cancel={cancelBoot} add={addBootToList}/>
-      </Modal>
-      <View style={styles.listStyle}>
+      <AddBoot visibility={modalVisible} changeVisibility={setModalVisible} bootDataHandler={addBootToList} />
       <View style={styles.buttonSt}>
-        <Button color="#38b058" title='Add boot' onPress={showInputView} />
-        </View>
-        <Text style={{fontSize: 20}}>List of Boots</Text>
-        <ScrollView style={styles.scrollviewstyle}>
+        <Button onPress={showInputModal} title="Add boot" />
+      </View>
+      <Text style={{fontSize: 20}}>List of Boots</Text>
+      <ScrollView style={styles.scrollviewstyle}>
         {listOfBoots.map((item, index) => (
-          <TouchableOpacity key={index} onLongPress={()=>deleteItem(index)}>
-          <View style={styles.listText}>
-            <Text style={{ fontSize: 17 }}>
-            {item.idBoot}: {item.typeBoot}
-            </Text>
-          </View>
+          <TouchableOpacity key={index} onLongPress={() => deleteBoot(index)}>
+            <View style={styles.listText}>
+              <Text style={{fontSize: 17}}>
+                {item.id}: {item.type}
+              </Text>
+            </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
-      </View>
     </View>
   );
 };
@@ -84,16 +59,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    width:"100%",
   },
   buttonSt: {
     width: '80%',
     margin: 20,
-  },
-  titleText: {
-    marginTop: 5,
-    alignItems: 'center',
   },
   listText: {
     marginTop: 5,
@@ -103,19 +72,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 2,
   },
-  scrollviewstyle:{
-    width:'80%',
-    backgroundColor:'#BEBEBE',
-  },
-  listStyle:{
-    flex:8,
-    alignItems:'center',
-    justifyContent:'space-around',
-    backgroundColor:"#eee",
-    borderColor:"black",
-    borderWidth:2,
-    width:"100%",
-
+  scrollviewstyle: {
+    width: '80%',
+    backgroundColor: '#BEBEBE',
   },
 });
 
