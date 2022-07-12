@@ -10,28 +10,37 @@ import {
   Alert,
 } from 'react-native';
 import AddBoot from './components/AddBoot';
+import ModifyBoot from './components/ModifyBoot';
 
 const App = () => {
   const [listOfBoots, addBootList] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [addBootVisible, setAddBootVisible] = useState(false);
+  const [modifyBootVisible, setModifyBootVisible] = useState(false);
   const [updateId, setUpdateId] = useState(-1);
   const [bootToUpdate, setBootToUpdate] = useState();
 
   const addBootToList = (id, type) => {
     if (id.trim().length>0 && type.trim().length>0 && updateId===-1) {
         addBootList(listOfBoots => [...listOfBoots, {id: id.trim(), type: type.trim()}]);
-        setModalVisible(false);
-    } else if (id.trim().length>0 && type.trim().length>0 && updateId!=-1) {
-        listOfBoots[updateId].type=type.trim();
-        listOfBoots[updateId].id=id.trim();
-        addBootList(listOfBoots);
-        setUpdateId(-1);   
-        setModalVisible(false);  
+        setAddBootVisible(false);
     } else {
-        Alert.alert("No boot added/modified!", "One or both fields were empty.")
-        setModalVisible(false);
+        Alert.alert("No boot added!", "One or both fields were empty.")
+        setAddBootVisible(false);
     }
   };
+
+  const modifyBoot = (id, type) => {
+    if (id.trim().length>0 && type.trim().length>0 && updateId!=-1) {
+      listOfBoots[updateId].type=type.trim();
+      listOfBoots[updateId].id=id.trim();
+      addBootList(listOfBoots);
+      setUpdateId(-1);   
+      setModifyBootVisible(false);  
+  } else {
+      Alert.alert("Boot not modified!", "One or both fields were empty.")
+      setModifyBootVisible(false);
+  }
+};
 
   const deleteBoot = removeId => {
     addBootList(listOfBoots =>
@@ -42,16 +51,17 @@ const App = () => {
   const updateItem=(index)=>{
     setUpdateId(index);
     setBootToUpdate(listOfBoots[index]);
-    setModalVisible(true);
+    setModifyBootVisible(true);
   }
 
   const showInputModal = () => {
-    setModalVisible(true);
+    setAddBootVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <AddBoot visibility={modalVisible} bootDataHandler={addBootToList} bootToUpdate={bootToUpdate}/>
+      <AddBoot visibility={addBootVisible} setVisibility={setAddBootVisible} bootDataHandler={addBootToList}/>
+      <ModifyBoot visibility={modifyBootVisible} setVisibility={setModifyBootVisible} bootDataHandler={modifyBoot} bootToUpdate={bootToUpdate}/>
       <View style={styles.buttonSt}>
         <Button onPress={showInputModal} title="Add boot" />
       </View>

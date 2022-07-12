@@ -5,6 +5,11 @@ const AddBoot = (props) => {
     const [bootID, setBootID] = useState('');
     const [bootType, setBootType] = useState('');
     
+    useEffect(()=>{
+        setBootID(props.bootToUpdate==undefined ? "" : props.bootToUpdate.id);
+        setBootType(props.bootToUpdate==undefined ? "" : props.bootToUpdate.type);
+    }, [props.bootToUpdate])
+
     const idInputHandler = (enteredText) => {
         setBootID(enteredText);
       }
@@ -13,20 +18,16 @@ const AddBoot = (props) => {
         setBootType(enteredNumb);
       }
     const cancelBoot=()=>{
-        setBootType('');
-        setBootID('');
         props.setVisibility(false);
       }
-    const addBootList=()=>{
+    const modifyBoot=()=>{
         props.bootDataHandler(bootID, bootType);
-        setBootType('');
-        setBootID('');
     }
 
     return(
         <Modal visible={props.visibility}>
           <View style={styles.mainform}>
-          <Text style={{fontSize: 20}}>Add a new boot to the list</Text>
+          <Text style={{fontSize: 20}}>Modify a boot on the list</Text>
             <View style={styles.formstyle}>
             <TextInput
               style={styles.idinput}
@@ -49,7 +50,7 @@ const AddBoot = (props) => {
               <Button title="Cancel" onPress={cancelBoot} />
             </View>
             <View style={styles.buttonstyle}>
-              <Button title="OK" onPress={addBootList} />
+              <Button title="OK" onPress={modifyBoot} />
             </View>
           </View>        
         </Modal>
