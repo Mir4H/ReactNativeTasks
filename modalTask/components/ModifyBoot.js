@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, Modal, View, TextInput, Button, StyleSheet} from 'react-native';
 
-const AddBoot = props => {
+const ModifyBoot = props => {
   const [bootID, setBootID] = useState('');
   const [bootType, setBootType] = useState('');
 
@@ -13,7 +13,6 @@ const AddBoot = props => {
   const idInputHandler = enteredText => {
     setBootID(enteredText);
   };
-
   const typeInputHandler = enteredNumb => {
     setBootType(enteredNumb);
   };
@@ -92,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddBoot;
+export default ModifyBoot;

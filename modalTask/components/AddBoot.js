@@ -8,7 +8,6 @@ const AddBoot = props => {
   const idInputHandler = enteredText => {
     setBootID(enteredText);
   };
-
   const typeInputHandler = enteredNumb => {
     setBootType(enteredNumb);
   };

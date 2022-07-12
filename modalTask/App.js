@@ -44,19 +44,16 @@ const App = () => {
       setModifyBootVisible(false);
     }
   };
-
   const deleteBoot = removeId => {
     addBootList(listOfBoots =>
       listOfBoots.filter((boot, index) => index != removeId),
     );
   };
-
   const updateItem = index => {
     setUpdateId(index);
     setBootToUpdate(listOfBoots[index]);
     setModifyBootVisible(true);
   };
-
   const showInputModal = () => {
     setAddBootVisible(true);
   };
