@@ -14,13 +14,22 @@ import AddBoot from './components/AddBoot';
 const App = () => {
   const [listOfBoots, addBootList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [updateId, setUpdateId] = useState(-1);
+  const [bootToUpdate, setBootToUpdate] = useState();
 
   const addBootToList = (id, type) => {
-    if (id.trim().length>0 && type.trim().length>0) {
-      addBootList(listOfBoots => [...listOfBoots, {id: id.trim(), type: type.trim()}]);
-      setModalVisible(false);      
+    if (id.trim().length>0 && type.trim().length>0 && updateId===-1) {
+        addBootList(listOfBoots => [...listOfBoots, {id: id.trim(), type: type.trim()}]);
+        setModalVisible(false);
+    } else if (id.trim().length>0 && type.trim().length>0 && updateId!=-1) {
+        listOfBoots[updateId].type=type.trim();
+        listOfBoots[updateId].id=id.trim();
+        addBootList(listOfBoots);
+        setUpdateId(-1);   
+        setModalVisible(false);  
     } else {
-      Alert.alert("No boot added!", "One or both fields were empty.")
+        Alert.alert("No boot added/modified!", "One or both fields were empty.")
+        setModalVisible(false);
     }
   };
 
@@ -29,20 +38,27 @@ const App = () => {
       listOfBoots.filter((boot, index) => index != removeId),
     );
   };
+
+  const updateItem=(index)=>{
+    setUpdateId(index);
+    setBootToUpdate(listOfBoots[index]);
+    setModalVisible(true);
+  }
+
   const showInputModal = () => {
     setModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      <AddBoot visibility={modalVisible} changeVisibility={setModalVisible} bootDataHandler={addBootToList} />
+      <AddBoot visibility={modalVisible} bootDataHandler={addBootToList} bootToUpdate={bootToUpdate}/>
       <View style={styles.buttonSt}>
         <Button onPress={showInputModal} title="Add boot" />
       </View>
       <Text style={{fontSize: 20}}>List of Boots</Text>
       <ScrollView style={styles.scrollviewstyle}>
         {listOfBoots.map((item, index) => (
-          <TouchableOpacity key={index} onLongPress={() => deleteBoot(index)}>
+          <TouchableOpacity key={index} onLongPress={() => deleteBoot(index)} onPress={()=>updateItem(index)}>
             <View style={styles.listText}>
               <Text style={{fontSize: 17}}>
                 {item.id}: {item.type}

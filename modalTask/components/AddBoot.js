@@ -1,10 +1,15 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, Modal, View, TextInput, Button, StyleSheet} from 'react-native';
 
 const AddBoot = (props) => {
     const [bootID, setBootID] = useState('');
     const [bootType, setBootType] = useState('');
     
+    useEffect(()=>{
+        setBootID(props.bootToUpdate==undefined ? "" : props.bootToUpdate.id);
+        setBootType(props.bootToUpdate==undefined ? "" : props.bootToUpdate.type);
+    }, [props.bootToUpdate])
+
     const idInputHandler = (enteredText) => {
         setBootID(enteredText);
       }
@@ -15,8 +20,12 @@ const AddBoot = (props) => {
     const cancelBoot=()=>{
         setBootType('');
         setBootID('');
-        props.changeVisibility(false);
       }
+    const addBootList=()=>{
+        props.bootDataHandler(bootID, bootType);
+        setBootType('');
+        setBootID('');
+    }
 
     return(
         <Modal visible={props.visibility}>
@@ -43,7 +52,7 @@ const AddBoot = (props) => {
               <Button title="Cancel" onPress={cancelBoot} />
             </View>
             <View style={styles.buttonstyle}>
-              <Button title="OK" onPress={()=>props.bootDataHandler(bootID, bootType)} />
+              <Button title="OK" onPress={addBootList} />
             </View>
           </View>        
         </Modal>
