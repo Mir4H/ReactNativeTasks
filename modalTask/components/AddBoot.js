@@ -1,94 +1,94 @@
 import React, {useEffect, useState} from 'react';
 import {Text, Modal, View, TextInput, Button, StyleSheet} from 'react-native';
 
-const AddBoot = (props) => {
-    const [bootID, setBootID] = useState('');
-    const [bootType, setBootType] = useState('');
-    
-    const idInputHandler = (enteredText) => {
-        setBootID(enteredText);
-      }
+const AddBoot = props => {
+  const [bootID, setBootID] = useState('');
+  const [bootType, setBootType] = useState('');
 
-    const typeInputHandler = (enteredNumb) => {
-        setBootType(enteredNumb);
-      }
-    const cancelBoot=()=>{
-        setBootType('');
-        setBootID('');
-        props.setVisibility(false);
-      }
-    const addBootList=()=>{
-        props.bootDataHandler(bootID, bootType);
-        setBootType('');
-        setBootID('');
-    }
+  const idInputHandler = enteredText => {
+    setBootID(enteredText);
+  };
 
-    return(
-        <Modal visible={props.visibility}>
-          <View style={styles.mainform}>
-          <Text style={{fontSize: 20}}>Add a new boot to the list</Text>
-            <View style={styles.formstyle}>
-            <TextInput
-              style={styles.idinput}
-              maxLength={4}
-              value={bootID}
-              onChangeText={idInputHandler}
-              placeholder="ID"
-            />
-            <TextInput
-              style={styles.typeinput}
-              maxLength={30}
-              value={bootType}
-              onChangeText={typeInputHandler}
-              placeholder="Boot Type"
-            />
-          </View>
-          </View>
-          <View style={styles.formstyle}>
-            <View style={styles.buttonstyle}>
-              <Button title="Cancel" onPress={cancelBoot} />
-            </View>
-            <View style={styles.buttonstyle}>
-              <Button title="OK" onPress={addBootList} />
-            </View>
-          </View>        
-        </Modal>
-      );
-    };
+  const typeInputHandler = enteredNumb => {
+    setBootType(enteredNumb);
+  };
+  const cancelBoot = () => {
+    setBootType('');
+    setBootID('');
+    props.setVisibility(false);
+  };
+  const addBootList = () => {
+    props.bootDataHandler(bootID, bootType);
+    setBootType('');
+    setBootID('');
+  };
+
+  return (
+    <Modal visible={props.visibility}>
+      <View style={styles.mainform}>
+        <Text style={{fontSize: 20}}>Add a new boot to the list</Text>
+        <View style={styles.formstyle}>
+          <TextInput
+            style={styles.idinput}
+            maxLength={4}
+            value={bootID}
+            onChangeText={idInputHandler}
+            placeholder="ID"
+          />
+          <TextInput
+            style={styles.typeinput}
+            maxLength={30}
+            value={bootType}
+            onChangeText={typeInputHandler}
+            placeholder="Boot Type"
+          />
+        </View>
+      </View>
+      <View style={styles.formstyle}>
+        <View style={styles.buttonstyle}>
+          <Button title="Cancel" onPress={cancelBoot} />
+        </View>
+        <View style={styles.buttonstyle}>
+          <Button title="OK" onPress={addBootList} />
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
-    mainform: {
-        alignItems: 'center',
-        marginTop: 10,
-        width: '100%',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-      },
-    idinput: {
-        backgroundColor: '#d6d6d6',
-        width: '20%',
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginTop: 20,
-        marginBottom: 10,
-      },
-    typeinput: {
-        backgroundColor: '#d6d6d6',
-        width: '70%',
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginTop: 20,
-        marginBottom: 10,
-      },
-    formstyle: {
-        width: '100%',
-        flexDirection: 'row',
-        marginBottom: 10,
-        justifyContent: 'space-around',
-      },
-    buttonstyle: {
-        width: '30%',
-      },
-  });
+  mainform: {
+    alignItems: 'center',
+    marginTop: 10,
+    width: '100%',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+  },
+  idinput: {
+    backgroundColor: '#d6d6d6',
+    width: '20%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  typeinput: {
+    backgroundColor: '#d6d6d6',
+    width: '70%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  formstyle: {
+    width: '100%',
+    flexDirection: 'row',
+    marginBottom: 10,
+    justifyContent: 'space-around',
+  },
+  buttonstyle: {
+    width: '30%',
+  },
+});
 
-  export default AddBoot;
+export default AddBoot;

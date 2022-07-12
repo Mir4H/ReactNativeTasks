@@ -20,27 +20,30 @@ const App = () => {
   const [bootToUpdate, setBootToUpdate] = useState();
 
   const addBootToList = (id, type) => {
-    if (id.trim().length>0 && type.trim().length>0 && updateId===-1) {
-        addBootList(listOfBoots => [...listOfBoots, {id: id.trim(), type: type.trim()}]);
-        setAddBootVisible(false);
+    if (id.trim().length > 0 && type.trim().length > 0) {
+      addBootList(listOfBoots => [
+        ...listOfBoots,
+        {id: id.trim(), type: type.trim()},
+      ]);
+      setAddBootVisible(false);
     } else {
-        Alert.alert("No boot added!", "One or both fields were empty.")
-        setAddBootVisible(false);
+      Alert.alert('No boot added!', 'One or both fields were empty.');
+      setAddBootVisible(false);
     }
   };
 
   const modifyBoot = (id, type) => {
-    if (id.trim().length>0 && type.trim().length>0 && updateId!=-1) {
-      listOfBoots[updateId].type=type.trim();
-      listOfBoots[updateId].id=id.trim();
+    if (id.trim().length > 0 && type.trim().length > 0) {
+      listOfBoots[updateId].type = type.trim();
+      listOfBoots[updateId].id = id.trim();
       addBootList(listOfBoots);
-      setUpdateId(-1);   
-      setModifyBootVisible(false);  
-  } else {
-      Alert.alert("Boot not modified!", "One or both fields were empty.")
+      setUpdateId(-1);
       setModifyBootVisible(false);
-  }
-};
+    } else {
+      Alert.alert('Boot not modified!', 'One or both fields were empty.');
+      setModifyBootVisible(false);
+    }
+  };
 
   const deleteBoot = removeId => {
     addBootList(listOfBoots =>
@@ -48,11 +51,11 @@ const App = () => {
     );
   };
 
-  const updateItem=(index)=>{
+  const updateItem = index => {
     setUpdateId(index);
     setBootToUpdate(listOfBoots[index]);
     setModifyBootVisible(true);
-  }
+  };
 
   const showInputModal = () => {
     setAddBootVisible(true);
@@ -60,15 +63,27 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <AddBoot visibility={addBootVisible} setVisibility={setAddBootVisible} bootDataHandler={addBootToList}/>
-      <ModifyBoot visibility={modifyBootVisible} setVisibility={setModifyBootVisible} bootDataHandler={modifyBoot} bootToUpdate={bootToUpdate}/>
+      <AddBoot
+        visibility={addBootVisible}
+        setVisibility={setAddBootVisible}
+        bootDataHandler={addBootToList}
+      />
+      <ModifyBoot
+        visibility={modifyBootVisible}
+        setVisibility={setModifyBootVisible}
+        bootDataHandler={modifyBoot}
+        bootToUpdate={bootToUpdate}
+      />
       <View style={styles.buttonSt}>
         <Button onPress={showInputModal} title="Add boot" />
       </View>
       <Text style={{fontSize: 20}}>List of Boots</Text>
       <ScrollView style={styles.scrollviewstyle}>
         {listOfBoots.map((item, index) => (
-          <TouchableOpacity key={index} onLongPress={() => deleteBoot(index)} onPress={()=>updateItem(index)}>
+          <TouchableOpacity
+            key={index}
+            onLongPress={() => deleteBoot(index)}
+            onPress={() => updateItem(index)}>
             <View style={styles.listText}>
               <Text style={{fontSize: 17}}>
                 {item.id}: {item.type}
