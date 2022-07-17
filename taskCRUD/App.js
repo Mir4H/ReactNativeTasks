@@ -10,6 +10,14 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {init} from './database/db';
+
+init()
+  .then(()=>{
+    console.log('Database creation succeeded!');
+  }).catch((err)=>{
+    console.log('Database IS NOT initialized! '+err);
+  });
 
 const Stack = createNativeStackNavigator();
 
@@ -35,7 +43,7 @@ const HomeScreen = props => {
       <TouchableOpacity activeOpacity={0.8}>
         <View style={styles.listItemStyle}>
           <Text>
-            {item.index + 1}: {item.item.type} {item.item.size}
+            {item.index + 1}: {item.item.type}, {item.item.size}
           </Text>
         </View>
       </TouchableOpacity>
