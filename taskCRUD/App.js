@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {init, addBootDb, fetchBoots} from './database/db';
+import {init, addBootDb, fetchBoots, deleteBootDb} from './database/db';
 
 init()
   .then(()=>{
@@ -33,7 +33,7 @@ const App = () => {
   );
 };
 
-const HomeScreen = props => {
+const HomeScreen = ({navigation}) => {
   const [bootList, addBoot] = useState([]);
   const isVisible = useIsFocused();
 
@@ -49,9 +49,21 @@ const HomeScreen = props => {
     }
   }
 
+  async function deleteBoot(boot) {
+    try{
+      const dbResult = await deleteBootDb(bootList[boot].id);
+      readBoots();
+    }
+    catch(err){
+      console.log("Error: "+err);
+    }
+    finally{
+    }
+  }
+
   const renderBoot = item => {
     return (
-      <TouchableOpacity activeOpacity={0.8}>
+      <TouchableOpacity activeOpacity={0.8} onLongPress={()=>deleteBoot(item.index)}>
         <View style={styles.listItemStyle}>
           <Text>
             {item.index + 1}: {item.item.type}, {item.item.size}
@@ -68,7 +80,7 @@ const HomeScreen = props => {
   return (
     <View style={{flex: 1}}>
       <Button
-        onPress={() => props.navigation.navigate('AddBoot')}
+        onPress={() => navigation.navigate('AddBoot')}
         title="Add Boot"
       />
       <View style={styles.homeStyle}>
@@ -82,7 +94,7 @@ const HomeScreen = props => {
   );
 };
 
-const AddBootScreen = props => {
+const AddBootScreen = ({ navigation }) => {
   const [bootType, setBootType] = useState('');
   const [bootSize, setBootSize] = useState('');
 
@@ -97,7 +109,7 @@ const AddBootScreen = props => {
   const cancelBoot = () => {
     setBootType('');
     setBootSize('');
-    props.navigation.navigate('Home')
+    navigation.navigate('Home')
   };
 
   async function saveBoot() {
@@ -109,14 +121,13 @@ const AddBootScreen = props => {
         console.log(err);
       } 
       finally{
-        props.navigation.navigate('Home')
+        navigation.navigate('Home')
       }
     }
     else {
       Alert.alert('Boot not added!', 'One or both fields were empty.');
     }
   }
-
 
   return (
     <View style={styles.mainform}>

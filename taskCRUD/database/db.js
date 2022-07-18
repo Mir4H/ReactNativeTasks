@@ -45,19 +45,30 @@ export const fetchBoots=()=>{
         db.transaction((tx)=>{
             tx.executeSql('select * from '+tableName, [],
             (tx, result)=>{
-                let items=[];
-                for (let i = 0; i < result.rows.length; i++){
-                    items.push(result.rows.item(i));
-                }
-                resolve(items);
+                resolve(result.rows.raw());
             },
             (tx,err)=>{
-                console.log("Err");
-                console.log(err);
                 reject(err);
             }
         );
     });
 });
 return promise;
+};
+
+export const deleteBootDb=(boot)=>{
+    const promise = new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('delete from '+tableName+' where id=?;',
+            [boot],            
+            ()=>{
+                resolve();
+            },
+            (_,err)=>{
+                reject(err);
+            }
+            );
+        });
+    });
+    return promise;
 };
