@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,11 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {init} from './database/db';
+import {init, addBootDb, fetchBoots} from './database/db';
 
 init()
   .then(()=>{
@@ -33,10 +34,20 @@ const App = () => {
 };
 
 const HomeScreen = props => {
-  const [bootList, addBoot] = useState([
-    {id: 1, type: 'Leather Boot', size: 39},
-    {id: 2, type: 'Winter Boot', size: 42},
-  ]);
+  const [bootList, addBoot] = useState([]);
+  const isVisible = useIsFocused();
+
+  async function readBoots() {
+    try{
+      const dbResult = await fetchBoots();
+      addBoot(dbResult);
+    }
+    catch(err){
+      console.log("Error: "+err);
+    }
+    finally{
+    }
+  }
 
   const renderBoot = item => {
     return (
@@ -49,6 +60,11 @@ const HomeScreen = props => {
       </TouchableOpacity>
     );
   };
+
+  useEffect(()=> {
+    readBoots();
+  }, [isVisible]);
+
   return (
     <View style={{flex: 1}}>
       <Button
@@ -84,6 +100,23 @@ const AddBootScreen = props => {
     props.navigation.navigate('Home')
   };
 
+  async function saveBoot() {
+    if (bootType.trim().length > 0 && bootSize.trim().length > 0) {
+      try{
+        await addBootDb(bootType.trim(), bootSize.trim());
+      } 
+      catch(err){
+        console.log(err);
+      } 
+      finally{
+        props.navigation.navigate('Home')
+      }
+    }
+    else {
+      Alert.alert('Boot not added!', 'One or both fields were empty.');
+    }
+  }
+
 
   return (
     <View style={styles.mainform}>
@@ -109,7 +142,7 @@ const AddBootScreen = props => {
         <Button title="Cancel" onPress={cancelBoot} />
       </View>
       <View style={styles.buttonstyle}>
-        <Button title="OK" />
+        <Button title="OK" onPress={saveBoot}/>
       </View>
     </View>
     </View>
