@@ -8,7 +8,7 @@ var tableName="boots";
 export const init = () =>{
     const promise = new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
-            //tx.executeSql('DROP TABLE IF EXISTS boots', []);
+            //tx.executeSql('DROP TABLE IF EXISTS boots', []); //For testing
             tx.executeSql('create table if not exists '+tableName+'(id integer not null primary key, type text not null, size real not null);',
             [],
             ()=>{
@@ -61,6 +61,23 @@ export const deleteBootDb=(boot)=>{
         db.transaction((tx)=>{
             tx.executeSql('delete from '+tableName+' where id=?;',
             [boot],            
+            ()=>{
+                resolve();
+            },
+            (_,err)=>{
+                reject(err);
+            }
+            );
+        });
+    });
+    return promise;
+};
+
+export const updateBootDb=(id, type, size)=>{
+    const promise = new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('update '+tableName+' set type=?, size=? where id=?;',
+            [type, size, id],            
             ()=>{
                 resolve();
             },

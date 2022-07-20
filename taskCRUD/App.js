@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {init, addBootDb, fetchBoots, deleteBootDb} from './database/db';
+import {init, addBootDb, fetchBoots, deleteBootDb, updateBootDb} from './database/db';
 
 init()
   .then(()=>{
@@ -25,7 +25,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Details">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Boot List' }}/>
         <Stack.Screen name="AddBoot" component={AddBootScreen} options={{ title: 'Add new boot to list' }}/>
       </Stack.Navigator>
@@ -61,9 +61,14 @@ const HomeScreen = ({navigation}) => {
     }
   }
 
+  async function updateBoot(boot) {
+    navigation.navigate('AddBoot', 
+    {boot: bootList[boot]});
+  }
+
   const renderBoot = item => {
     return (
-      <TouchableOpacity activeOpacity={0.8} onLongPress={()=>deleteBoot(item.index)}>
+      <TouchableOpacity activeOpacity={0.8} onLongPress={()=>deleteBoot(item.index)} onPress={()=>updateBoot(item.index)}>
         <View style={styles.listItemStyle}>
           <Text>
             {item.index + 1}: {item.item.type}, {item.item.size}
@@ -94,9 +99,17 @@ const HomeScreen = ({navigation}) => {
   );
 };
 
-const AddBootScreen = ({ navigation }) => {
-  const [bootType, setBootType] = useState('');
-  const [bootSize, setBootSize] = useState('');
+const AddBootScreen = (props) => {
+  const [bootType, setBootType] = useState(props.route.params == undefined ? "" : props.route.params.boot.type);
+  const [bootSize, setBootSize] = useState(props.route.params == undefined ? "" : props.route.params.boot.size);
+  const [bootId, setBootId] = useState(props.route.params == undefined ? "" : props.route.params.boot.id);
+
+  useEffect(()=>{
+    setBootType(props.route.params==undefined ? "" : props.route.params.boot.type)
+    setBootSize(props.route.params==undefined ? "" : props.route.params.boot.size.toString())
+
+  },[props.route.params]
+);
 
   const typeInputHandler = enteredNumb => {
     setBootType(enteredNumb);
@@ -109,23 +122,35 @@ const AddBootScreen = ({ navigation }) => {
   const cancelBoot = () => {
     setBootType('');
     setBootSize('');
-    navigation.navigate('Home')
+    props.navigation.navigate('Home')
   };
 
   async function saveBoot() {
     if (bootType.trim().length > 0 && bootSize.trim().length > 0) {
-      try{
-        await addBootDb(bootType.trim(), bootSize.trim());
-      } 
-      catch(err){
-        console.log(err);
-      } 
-      finally{
-        navigation.navigate('Home')
+      if (bootId == "") {
+        try{
+          await addBootDb(bootType.trim(), bootSize.trim());
+        } 
+        catch(err){
+          console.log(err);
+        } 
+        finally{
+          props.navigation.navigate('Home')
+        }
+      } else {
+        try{
+          await updateBootDb(bootId, bootType.trim(), bootSize.trim());
+        } 
+        catch(err){
+          console.log(err);
+        } 
+        finally{
+          props.navigation.navigate('Home')
+        }
       }
     }
     else {
-      Alert.alert('Boot not added!', 'One or both fields were empty.');
+      Alert.alert('Boot not added or modified!', 'One or both fields were empty.');
     }
   }
 
