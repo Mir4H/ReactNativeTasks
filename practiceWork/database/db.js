@@ -38,7 +38,6 @@ export const saveDataToDb=(firstname, lastname, street, postalCode, city, archiv
         });
     });
     return promise;
-    fetchBoots();
 };
 
 export const fetchData=(order)=>{

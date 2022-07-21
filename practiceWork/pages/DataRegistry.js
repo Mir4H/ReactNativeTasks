@@ -32,7 +32,6 @@ const DataRegistry = ({navigation}) => {
     } catch (err) {
       console.log('Error: ' + err);
     } finally {
-      console.log(registryData);
     }
   }
 
@@ -66,9 +65,9 @@ const DataRegistry = ({navigation}) => {
       </View>
       <View style={styles.buttons}>
       <Text style={{fontSize: 15}}>Sort by:</Text>
-        <Button color="#b39e98" title="Firstname" onPress={() => readData('firstname')} />
-        <Button color="#b39e98" title="Lastname" onPress={() => readData('lastname')} />
-        <Button color="#b39e98" title="Postal Code" onPress={() => readData('postalcode')} />
+        <Button color={colors.pink} title="Firstname" onPress={() => readData('firstname')} />
+        <Button color={colors.pink} title="Lastname" onPress={() => readData('lastname')} />
+        <Button color={colors.pink} title="Postal Code" onPress={() => readData('postalcode')} />
       </View>
     </View>
   );
@@ -76,7 +75,7 @@ const DataRegistry = ({navigation}) => {
 
 const styles = StyleSheet.create({
   homeStyle: {
-    flex: 8,
+    flex: 1,
     alignItems: 'center',
     width: '100%',
   },
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
   iconStyle: {
     width: 45,
     height: 45,
-    backgroundColor: '#b39e98',
+    backgroundColor: colors.pink,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
