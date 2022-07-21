@@ -23,7 +23,7 @@ const App=()=>{
       <Drawer.Navigator initialRouteName="DataRegistry">
         <Drawer.Screen name="DataRegistry" component={DataRegistry} options={{ title: 'Contacts' }}/>
         <Drawer.Screen name="DataDetails" component={DataDetails} options={{ title: 'Details' }, {drawerItemStyle:{display:'none',}}}/>
-        <Drawer.Screen name="AddData" component={AddData}  options={{ title: '' }}/>
+        <Drawer.Screen name="AddData" component={AddData}  options={{ title: 'Add Contact' }}/>
         <Drawer.Screen name="Archive" component={Archive} options={{ title: 'Archive' }}/>
       </Drawer.Navigator>
     </NavigationContainer>

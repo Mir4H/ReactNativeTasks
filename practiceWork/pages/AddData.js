@@ -13,7 +13,6 @@ const AddData = ({navigation}) => {
     street: '',
     postalCode: '',
     city: '',
-    country: '',
   });  
 
   const fieldChanged = (enteredText, field) => {
@@ -46,10 +45,6 @@ const AddData = ({navigation}) => {
           label="City" 
           placeholder="City... "
           onChangeText ={(text)=>fieldChanged(text, "city")} />
-          <InputField 
-          label="Counrty" 
-          placeholder="Counrty... "
-          onChangeText ={(text)=>fieldChanged(text, "country")} />
           <View style={styles.buttonRow}>
             <View style={styles.buttonstyle}>
               <Button title="Add" />
