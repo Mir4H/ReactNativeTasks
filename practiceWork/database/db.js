@@ -9,7 +9,7 @@ export const init = () =>{
     const promise = new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
             //tx.executeSql('DROP TABLE IF EXISTS people', []); //For testing
-            tx.executeSql('create table if not exists '+tableName+'(id integer not null primary key, fname text not null, lname text not null, street text, pcode integer not null, city text, country text, archive integer);',
+            tx.executeSql('create table if not exists '+tableName+'(id integer not null primary key, fname text not null, lname text not null, street text, pcode text not null, city text, country text, archive integer);',
             [],
             ()=>{
                 resolve();
