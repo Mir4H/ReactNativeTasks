@@ -1,28 +1,38 @@
 import React, {useEffect, useState} from 'react';
-import {Button, View, StyleSheet, FlatList, TouchableOpacity, Text} from 'react-native';
+import {
+  Button,
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {fetchData} from './../database/db';
 
-const DataRegistry = ({navigation}) => {
+const colors = {
+    pink: '#b39e98',
+    lightGrey: '#B9B7BD',
+    offWhite: '#F5F5F5',
+}
 
+const DataRegistry = ({navigation}) => {
   const [registryData, setRegistryData] = useState([]);
   const isVisible = useIsFocused();
 
   useEffect(() => {
     readData('id');
-  }, [isVisible])
+  }, [isVisible]);
 
   async function readData(orderBy) {
-    try{
+    try {
       const dbResult = await fetchData(orderBy);
       setRegistryData(dbResult);
-    }
-    catch(err){
-      console.log("Error: "+err);
-    }
-    finally{
-        console.log(registryData);
+    } catch (err) {
+      console.log('Error: ' + err);
+    } finally {
+      console.log(registryData);
     }
   }
 
@@ -30,8 +40,15 @@ const DataRegistry = ({navigation}) => {
     return (
       <TouchableOpacity activeOpacity={0.8}>
         <View style={styles.listItemStyle}>
-          <Text>
-            {item.item.firstname.toUpperCase() } {item.item.lastname.toUpperCase()} - {item.item.postalcode}
+          <View style={styles.iconStyle}>
+            <Text style={{fontSize: 16, color: '#F5F5F5'}}>
+              {item.item.firstname[0].toUpperCase()}
+              {item.item.lastname[0].toUpperCase()}
+            </Text>
+          </View>
+          <Text style={styles.textStyle}>
+            {item.item.firstname.toUpperCase()}{' '}
+            {item.item.lastname.toUpperCase()} - {item.item.postalcode}
           </Text>
         </View>
       </TouchableOpacity>
@@ -47,38 +64,56 @@ const DataRegistry = ({navigation}) => {
           renderItem={renderData}
         />
       </View>
-      <Text>Sort by</Text>
       <View style={styles.buttons}>
-      <Button title="Firstname" onPress={() => readData('firstname')}/>
-      <Button title="Lastname" onPress={() => readData('lastname')}/>
-      <Button title="Postal Code" onPress={() => readData('postalcode')}/>
-    </View>
+      <Text style={{fontSize: 15}}>Sort by:</Text>
+        <Button color="#b39e98" title="Firstname" onPress={() => readData('firstname')} />
+        <Button color="#b39e98" title="Lastname" onPress={() => readData('lastname')} />
+        <Button color="#b39e98" title="Postal Code" onPress={() => readData('postalcode')} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-    homeStyle: {
-      flex: 8,
-      alignItems: 'center',
-      backgroundColor: '#eee',
-      width: '100%',
-    },
-    flatlistStyle: {
-      width: '80%',
-      backgroundColor: 'grey',
-    },
-    listItemStyle: {
-        marginTop: 5,
-        padding: 5,
-        backgroundColor: '#abc',
-        width: '80%',
-        alignSelf: 'center',
-      },
-    buttons: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginBottom: 5,
-    }
+  homeStyle: {
+    flex: 8,
+    alignItems: 'center',
+    width: '100%',
+  },
+  flatlistStyle: {
+    width: '100%',
+    backgroundColor: colors.lightGrey,
+  },
+  listItemStyle: {
+    height: 55,
+    padding: 5,
+    marginTop: 1,
+    backgroundColor: colors.offWhite,
+    width: '100%',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 5,
+    marginTop: 5,
+    alignItems: 'center',
+  },
+  textStyle: {
+    alignSelf: 'center',
+    marginLeft: 20,
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 45,
+    height: 45,
+    backgroundColor: '#b39e98',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+    flexDirection: 'row',
+  },
 });
 export default DataRegistry;
