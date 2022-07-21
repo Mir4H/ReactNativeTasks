@@ -37,7 +37,7 @@ const DataRegistry = ({navigation}) => {
 
   const renderData = item => {
     return (
-      <TouchableOpacity activeOpacity={0.8}>
+      <TouchableOpacity activeOpacity={0.8} onPress={()=>navigation.navigate('DataDetails', {person: item.item.id})}>
         <View style={styles.listItemStyle}>
           <View style={styles.iconStyle}>
             <Text style={{fontSize: 16, color: '#F5F5F5'}}>

@@ -72,3 +72,20 @@ export const fetchArchiveData=()=>{
 });
 return promise;
 };
+
+export const fetchPersonData=(id)=>{
+    const promise = new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('select * from '+tableName+' where id = '+id, [],
+            (tx, result)=>{
+                resolve(result.rows.raw());
+            },
+            (tx,err)=>{
+                reject(err);
+            }
+        );
+    });
+});
+return promise;
+};
+
