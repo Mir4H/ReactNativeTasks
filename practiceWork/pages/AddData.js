@@ -4,7 +4,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import InputField from './components/InputField';
 import {ScrollView} from 'react-native-gesture-handler';
-import {saveDataToDb, fetchBoots} from './../database/db';
+import {saveDataToDb} from './../database/db';
 
 const AddData = ({navigation}) => {
 
@@ -15,7 +15,6 @@ const AddData = ({navigation}) => {
     postalCode: '',
     city: '',
   });  
-  const [bootList, addBoot] = useState([]);
   const [errors, setErrors] = useState({});
 
   const fieldChanged = (enteredText, field) => {
@@ -44,13 +43,13 @@ const AddData = ({navigation}) => {
 
   async function saveData() {
     try{
-        await saveDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim());
+        await saveDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim(), 0);
     } 
     catch(err){
         console.log(err);
     } 
     finally{
-        
+        navigation.navigate('DataRegistry');
     }
   }
 
