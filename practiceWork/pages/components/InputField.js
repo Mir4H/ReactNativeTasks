@@ -7,7 +7,7 @@ const InputField = ({label, error, onFocus = () => {}, ...props}) => {
   return (
     <View style={{marginBottom: 10}}>
       <Text style={style.label}>{label}</Text>
-      <View style={[style.inputText, {borderColor: error ? 'red':isFocused ? 'blue' : 'grey'}]}>
+      <View style={[style.inputText, {borderColor: error ? 'red': isFocused ? 'grey' : '#F2FFFD'}]}>
         <TextInput
           onFocus={() => {
             onFocus();
@@ -16,7 +16,7 @@ const InputField = ({label, error, onFocus = () => {}, ...props}) => {
           onBlur={() => {
             setIsFocused(false);
           }}
-          style={{color: 'blue', flex: 1}}
+          style={{color: 'black', flex: 1}}
           {...props}
         />
       </View>
@@ -35,7 +35,7 @@ const style = StyleSheet.create({
     backgroundColor: '#F2FFFD',
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'grey',
+    borderColor: '#F2FFFD',
   },
 });
 

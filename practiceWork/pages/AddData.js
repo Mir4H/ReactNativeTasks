@@ -4,6 +4,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import InputField from './components/InputField';
 import {ScrollView} from 'react-native-gesture-handler';
+import {saveDataToDb, fetchBoots} from './../database/db';
 
 const AddData = ({navigation}) => {
 
@@ -14,10 +15,44 @@ const AddData = ({navigation}) => {
     postalCode: '',
     city: '',
   });  
+  const [bootList, addBoot] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const fieldChanged = (enteredText, field) => {
-    setFieldInput(previous => ({...previous, [field]: enteredText}));
+    setFieldInput(fields => ({...fields, [field]: enteredText}));
   };
+
+  const checkInput = () => {
+    Keyboard.dismiss();
+    if (!fieldInput.firstname.trim()) {
+        handleError('Please input firstname', 'firstname')
+    }
+    if (!fieldInput.lastname.trim()) {
+        handleError('Please input lastname', 'lastname')
+    }
+    if (!fieldInput.postalCode.trim()) {
+        handleError('Please input postal code', 'postalCode')
+    }
+    else {
+        saveData();
+    }
+  };
+
+  const handleError = (errorMsg, input) => {
+    setErrors((errors)=>({...errors, [input]: errorMsg}))
+  }
+
+  async function saveData() {
+    try{
+        await saveDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim());
+    } 
+    catch(err){
+        console.log(err);
+    } 
+    finally{
+        
+    }
+  }
 
   return (
     <View style={styles.mainform}>
@@ -28,11 +63,19 @@ const AddData = ({navigation}) => {
           <InputField 
           label="Firstname *" 
           placeholder="Firstname... " 
-          onChangeText ={(text)=>fieldChanged(text, "firstname")} />
+          onChangeText ={(text)=>fieldChanged(text, "firstname")}  
+          error={errors.firstname}
+          onFocus={() => {
+            handleError(null, 'firstname');
+          }}/>
           <InputField 
           label="Lastname *" 
           placeholder="Lastname... "
-          onChangeText ={(text)=>fieldChanged(text, "lastname")} />
+          onChangeText ={(text)=>fieldChanged(text, "lastname")} 
+          error={errors.lastname}
+          onFocus={() => {
+            handleError(null, 'lastname');
+          }}/>
           <InputField 
           label="Street" 
           placeholder="Street... "
@@ -40,14 +83,19 @@ const AddData = ({navigation}) => {
           <InputField 
           label="Postal Code *" 
           placeholder="Postal Code... "
-          onChangeText ={(text)=>fieldChanged(text, "postalCode")} />
+          keyboardType = 'numeric'
+          onChangeText ={(text)=>fieldChanged(text, "postalCode")} 
+          error={errors.postalCode}
+          onFocus={() => {
+            handleError(null, 'postalCode');
+          }}/>
           <InputField 
           label="City" 
           placeholder="City... "
           onChangeText ={(text)=>fieldChanged(text, "city")} />
           <View style={styles.buttonRow}>
             <View style={styles.buttonstyle}>
-              <Button title="Add" />
+              <Button onPress={checkInput} title="Add" />
             </View>
             <View style={styles.buttonstyle}>
               <Button onPress={() => navigation.goBack()} title="Cancel" />
