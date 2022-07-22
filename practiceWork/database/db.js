@@ -89,3 +89,19 @@ export const fetchPersonData=(id)=>{
 return promise;
 };
 
+export const deleteItemDb=(id)=>{
+    const promise = new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('delete from '+tableName+' where id=?;',
+            [id],            
+            ()=>{
+                resolve();
+            },
+            (_,err)=>{
+                reject(err);
+            }
+            );
+        });
+    });
+    return promise;
+};

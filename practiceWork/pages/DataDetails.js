@@ -18,14 +18,6 @@ const colors = {
 };
 
 const DataDetails = ({route, navigation}) => {
-  /*  return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Button onPress={() => navigation.navigate('DataRegistry')} title="Data Registry" />
-          <Button onPress={() => navigation.goBack()} title="Cancel" />
-        </View>
-      );
-  }*/
-
   const [personData, setPersonData] = useState([]);
   const isVisible = useIsFocused();
 
@@ -45,8 +37,13 @@ const DataDetails = ({route, navigation}) => {
 
   const renderData = item => {
     return (
-      <TouchableOpacity activeOpacity={0.8}>
-        <View style={styles.card}>
+      <View style={styles.card}>
+        <View style={styles.iconStyle}>
+          <Text style={{fontSize: 28, color: colors.offWhite}}>
+            {item.item.firstname[0].toUpperCase()}
+            {item.item.lastname[0].toUpperCase()}
+          </Text>
+        </View>
         <View style={styles.row}>
           <Text style={styles.textStyle}>
             {item.item.firstname.toUpperCase()}{' '}
@@ -54,15 +51,17 @@ const DataDetails = ({route, navigation}) => {
           </Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.textStyle}>{item.item.street == "" ? "No street added" : item.item.street}</Text>
+          <Text style={styles.textStyle}>
+            {item.item.street == '' ? 'No street added' : item.item.street}
+          </Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.textStyle}>
-            {item.item.postalcode} {item.item.city == "" ? "No city added" : item.item.city}
+            {item.item.postalcode}{' '}
+            {item.item.city == '' ? 'No city added' : item.item.city}
           </Text>
         </View>
-        </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -76,21 +75,24 @@ const DataDetails = ({route, navigation}) => {
         />
       </View>
       <View style={styles.buttons}>
+      <View style={{width: '25%'}}>
         <Button
           color={colors.pink}
           onPress={() => navigation.navigate('DataRegistry')}
           title="Back"
-        />
+        /></View>
+        <View style={{width: '25%'}}>
         <Button
           color={colors.pink}
           title="Delete"
           onPress={() => readData('lastname')}
-        />
+        /></View>
+        <View style={{width: '25%'}}>
         <Button
           color={colors.pink}
           title="Update"
           onPress={() => readData('postalcode')}
-        />
+        /></View>
       </View>
     </View>
   );
@@ -119,12 +121,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   card: {
-    marginTop: '50%',
-    justifyContent:'center',
+    marginTop: '35%',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.offWhite,
     padding: 60,
-  }
+    shadowColor: '#000',
+    elevation: 5,
+  },
+  iconStyle: {
+    width: 80,
+    height: 80,
+    backgroundColor: colors.pink,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
 });
 
 export default DataDetails;
