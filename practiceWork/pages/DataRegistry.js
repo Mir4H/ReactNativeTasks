@@ -8,13 +8,13 @@ import {
   Text,
   Animated,
   Alert,
-  Modal
+  Modal,
 } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
-import {fetchData, deleteItemDb} from './../database/db';
+import {fetchData, deleteItemDb, archiveItemDb} from './../database/db';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const colors = {
   pink: '#b39e98',
@@ -59,7 +59,7 @@ const DataRegistry = ({navigation}) => {
       extrapolate: 'clamp',
     });
 
-    return (    
+    return (
       <Animated.View style={[styles.deleteStyle, {opacity: opacity}]}>
         <Animated.Text
           style={{color: '#fff', fontWeight: '600', transform: [{scale}]}}>
@@ -69,42 +69,64 @@ const DataRegistry = ({navigation}) => {
     );
   };
 
-  let swipeRow = [], prevOpenRow;
+  let swipeRow = [],
+    prevOpenRow;
 
-  const closeRow = useCallback((id) => {
-    if (prevOpenRow && prevOpenRow !== swipeRow[id]) {
+  const closeRow = useCallback(
+    id => {
+      if (prevOpenRow && prevOpenRow !== swipeRow[id]) {
         prevOpenRow.close();
-    }
-    prevOpenRow = swipeRow[id];
-}, [swipeRow]);
+      }
+      prevOpenRow = swipeRow[id];
+    },
+    [swipeRow],
+  );
 
   const renderData = item => {
     const alertDeleteItem = () => {
       Alert.alert('Attention!', 'Do you really want to delete item?', [
-        {text: 'Delete',
-        onPress: () => {deleteItem(item.item.id)}},
-        {text: 'Archive'},
+        {
+          text: 'Delete',
+          onPress: () => {
+            deleteItem(item.item.id);
+          },
+        },
+        {
+          text: 'Archive',
+          onPress: () => {
+            archiveItem(item.item.id);
+          },
+        },
         {text: 'Cancel', style: 'cancel'},
       ]);
     };
 
     async function deleteItem(itemToDelete) {
-        try{
-          const dbResult = await deleteItemDb(itemToDelete);
-          console.log(itemToDelete)
-          readData(ordering);
-        }
-        catch(err){
-          console.log("Error: "+err);
-        }
-        finally{
-        }
+      try {
+        const dbResult = await deleteItemDb(itemToDelete);
+        console.log(itemToDelete);
+        readData(ordering);
+      } catch (err) {
+        console.log('Error: ' + err);
+      } finally {
       }
+    }
+
+    async function archiveItem(itemToDelete) {
+      try {
+        const dbResult = await archiveItemDb(itemToDelete);
+        console.log(itemToDelete);
+        readData(ordering);
+      } catch (err) {
+        console.log('Error: ' + err);
+      } finally {
+      }
+    }
 
     return (
       <Swipeable
         key={item.item.id}
-        ref={ref => swipeRow[item.item.id] = ref}
+        ref={ref => (swipeRow[item.item.id] = ref)}
         onSwipeableWillOpen={() => closeRow(item.item.id)}
         renderRightActions={RenderRight}
         onSwipeableRightOpen={alertDeleteItem}>

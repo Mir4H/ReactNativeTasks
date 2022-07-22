@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
-import {fetchPersonData} from './../database/db';
+import {fetchPersonData, deleteItemDb} from './../database/db';
 
 const colors = {
   pink: '#b39e98',
@@ -29,6 +29,16 @@ const DataDetails = ({route, navigation}) => {
     try {
       const dbResult = await fetchPersonData(route.params.person);
       setPersonData(dbResult);
+    } catch (err) {
+      console.log('Error: ' + err);
+    } finally {
+    }
+  }
+
+  async function deleteItem(itemToDelete) {
+    try {
+      const dbResult = await deleteItemDb(itemToDelete);
+      navigation.navigate('DataRegistry');
     } catch (err) {
       console.log('Error: ' + err);
     } finally {
@@ -85,13 +95,13 @@ const DataDetails = ({route, navigation}) => {
         <Button
           color={colors.pink}
           title="Delete"
-          onPress={() => readData('lastname')}
+          onPress={() => deleteItem(route.params.person)}
         /></View>
         <View style={{width: '25%'}}>
         <Button
           color={colors.pink}
           title="Update"
-          onPress={() => readData('postalcode')}
+          onPress={() => navigation.navigate('AddData', {person: route.params.person})}
         /></View>
       </View>
     </View>

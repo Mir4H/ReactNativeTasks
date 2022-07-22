@@ -23,11 +23,11 @@ export const init = () =>{
     return promise;
 };
 
-export const saveDataToDb=(firstname, lastname, street, postalCode, city, archive)=>{
+export const saveDataToDb=(firstname, lastname, street, postalCode, city)=>{
     const promise = new Promise((resolve, reject)=>{
         db.transaction((tx)=>{
             tx.executeSql('insert into '+tableName+'(firstname, lastname, street, postalcode, city, archive) values(?,?,?,?,?,?);',
-            [firstname, lastname, street, postalCode, city, archive],            
+            [firstname, lastname, street, postalCode, city, 0],            
             ()=>{
                 resolve();
             },
@@ -94,6 +94,23 @@ export const deleteItemDb=(id)=>{
         db.transaction((tx)=>{
             tx.executeSql('delete from '+tableName+' where id=?;',
             [id],            
+            ()=>{
+                resolve();
+            },
+            (_,err)=>{
+                reject(err);
+            }
+            );
+        });
+    });
+    return promise;
+};
+
+export const archiveItemDb=(id)=>{
+    const promise = new Promise((resolve, reject)=>{
+        db.transaction((tx)=>{
+            tx.executeSql('update '+tableName+' set archive=? where id=?;',
+            [1, id],            
             ()=>{
                 resolve();
             },

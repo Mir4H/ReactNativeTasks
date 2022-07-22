@@ -43,7 +43,7 @@ const AddData = ({navigation}) => {
 
   async function saveData() {
     try{
-        await saveDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim(), 0);
+        await saveDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim());
     } 
     catch(err){
         console.log(err);
