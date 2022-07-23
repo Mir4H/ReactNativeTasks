@@ -7,7 +7,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {saveDataToDb} from './../database/db';
 
 const AddData = ({navigation}) => {
-
+// Setting data based on input fields
   const [fieldInput, setFieldInput]= useState({
     firstname: '',
     lastname: '',
@@ -15,15 +15,24 @@ const AddData = ({navigation}) => {
     postalCode: '',
     city: '',
   });  
-  const [errors, setErrors] = useState({});
 
+//When field changes set data 
   const fieldChanged = (enteredText, field) => {
     setFieldInput(fields => ({...fields, [field]: enteredText}));
   };
 
+//Setting error message based on empty fields
+  const [errors, setErrors] = useState({});
+
+  const handleError = (errorMsg, input) => {
+    setErrors((errors)=>({...errors, [input]: errorMsg}))
+  }
+
+  //Check for empty fields and show error if any
+  //Otherwise save data to database
   const checkInput = () => {
-    Keyboard.dismiss();
-    if (!fieldInput.firstname.trim()) {
+    Keyboard.dismiss(); //Close keyboard
+    if (!fieldInput.firstname.trim()) { 
         handleError('Please input firstname', 'firstname')
     }
     if (!fieldInput.lastname.trim()) {
@@ -37,10 +46,7 @@ const AddData = ({navigation}) => {
     }
   };
 
-  const handleError = (errorMsg, input) => {
-    setErrors((errors)=>({...errors, [input]: errorMsg}))
-  }
-
+  // Saving inputted data to database function
   async function saveData() {
     try{
         await saveDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim());
@@ -49,8 +55,20 @@ const AddData = ({navigation}) => {
         console.log(err);
     } 
     finally{
-        navigation.navigate('DataRegistry');
+        emptyFiels();
+        //Empty fields & go back to Registry page
     }
+  }
+
+  const emptyFiels = () => {
+    setFieldInput({
+        firstname: '',
+        lastname: '',
+        street: '',
+        postalCode: '',
+        city: '',
+      });
+      navigation.navigate('DataRegistry');
   }
 
   return (
@@ -66,7 +84,9 @@ const AddData = ({navigation}) => {
           error={errors.firstname}
           onFocus={() => {
             handleError(null, 'firstname');
-          }}/>
+          }}
+          value={fieldInput.firstname}
+          />
           <InputField 
           label="Lastname *" 
           placeholder="Lastname... "
@@ -74,11 +94,13 @@ const AddData = ({navigation}) => {
           error={errors.lastname}
           onFocus={() => {
             handleError(null, 'lastname');
-          }}/>
+          }}
+          value={fieldInput.lastname}/>
           <InputField 
           label="Street" 
           placeholder="Street... "
-          onChangeText ={(text)=>fieldChanged(text, "street")} />
+          onChangeText ={(text)=>fieldChanged(text, "street")} 
+          value={fieldInput.street}/>
           <InputField 
           label="Postal Code *" 
           placeholder="Postal Code... "
@@ -87,17 +109,19 @@ const AddData = ({navigation}) => {
           error={errors.postalCode}
           onFocus={() => {
             handleError(null, 'postalCode');
-          }}/>
+          }}
+          value={fieldInput.postalCode}/>
           <InputField 
           label="City" 
           placeholder="City... "
-          onChangeText ={(text)=>fieldChanged(text, "city")} />
+          onChangeText ={(text)=>fieldChanged(text, "city")} 
+          value={fieldInput.city}/>
           <View style={styles.buttonRow}>
             <View style={styles.buttonstyle}>
               <Button onPress={checkInput} title="Add" />
             </View>
             <View style={styles.buttonstyle}>
-              <Button onPress={() => navigation.goBack()} title="Cancel" />
+              <Button onPress={emptyFiels} title="Cancel" />
             </View>
           </View>
         </View>

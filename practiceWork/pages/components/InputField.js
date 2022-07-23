@@ -3,11 +3,15 @@ import {View, Text, StyleSheet} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 
 const InputField = ({label, error, onFocus = () => {}, ...props}) => {
-  const [isFocused, setIsFocused] = useState(false);
+const [isFocused, setIsFocused] = useState(false);
   return (
     <View style={{marginBottom: 10}}>
       <Text style={style.label}>{label}</Text>
-      <View style={[style.inputText, {borderColor: error ? 'red': isFocused ? 'grey' : '#F2FFFD'}]}>
+      <View
+        style={[
+          style.inputText,
+          {borderColor: error ? 'red' : isFocused ? 'grey' : '#F2FFFD'},
+        ]}>
         <TextInput
           onFocus={() => {
             onFocus();
@@ -20,7 +24,7 @@ const InputField = ({label, error, onFocus = () => {}, ...props}) => {
           {...props}
         />
       </View>
-      <Text style={{color:'red', fontSize: 12}}>{error}</Text>
+      <Text style={{color: 'red', fontSize: 12}}>{error}</Text>
     </View>
   );
 };
