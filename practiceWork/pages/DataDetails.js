@@ -20,6 +20,7 @@ const colors = {
 const DataDetails = ({route, navigation}) => {
   const [personData, setPersonData] = useState([]);
   const isVisible = useIsFocused();
+  const person = route.params.person;
 
   useEffect(() => {
     readData();
@@ -27,11 +28,12 @@ const DataDetails = ({route, navigation}) => {
 
   async function readData() {
     try {
-      const dbResult = await fetchPersonData(route.params.person);
+      const dbResult = await fetchPersonData(person);
       setPersonData(dbResult);
     } catch (err) {
       console.log('Error: ' + err);
     } finally {
+        
     }
   }
 
@@ -95,13 +97,13 @@ const DataDetails = ({route, navigation}) => {
         <Button
           color={colors.pink}
           title="Delete"
-          onPress={() => deleteItem(route.params.person)}
+          onPress={() => deleteItem(person)}
         /></View>
         <View style={{width: '25%'}}>
         <Button
           color={colors.pink}
           title="Update"
-          onPress={() => navigation.navigate('AddData', {person: route.params.person})}
+          onPress={() => navigation.navigate('AddData', {id: personData})}
         /></View>
       </View>
     </View>

@@ -1,20 +1,33 @@
 import React, {useEffect, useState} from 'react';
-import {Text, Button, View, StyleSheet, TextInput, SafeAreaView, Keyboard} from 'react-native';
+import {Text, Button, View, StyleSheet, TextInput, SafeAreaView, Keyboard, ActivityIndicator } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import InputField from './components/InputField';
 import {ScrollView} from 'react-native-gesture-handler';
-import {saveDataToDb} from './../database/db';
+import {saveDataToDb, fetchPersonData, updateDataToDb} from './../database/db';
 
-const AddData = ({navigation}) => {
+const AddData = ({route, navigation}) => {
+
+    const person = route.params.id;
+
 // Setting data based on input fields
   const [fieldInput, setFieldInput]= useState({
+    personId: '',
     firstname: '',
     lastname: '',
     street: '',
     postalCode: '',
     city: '',
   });  
+
+  useEffect(() => {
+    fieldChanged(person[0]['id'], "personId")
+    fieldChanged(person[0]['firstname'], "firstname")
+    fieldChanged(person[0]['lastname'], "lastname")
+    fieldChanged(person[0]['street'], "street")
+    fieldChanged(person[0]['postalcode'], "postalCode")
+    fieldChanged(person[0]['city'], "city")
+  }, [route.params.id])
 
 //When field changes set data 
   const fieldChanged = (enteredText, field) => {
@@ -42,7 +55,12 @@ const AddData = ({navigation}) => {
         handleError('Please input postal code', 'postalCode')
     }
     else {
-        saveData();
+        if (fieldInput.personId == "") {
+            saveData();
+        }
+        else {
+            updateData();
+        }
     }
   };
 
@@ -60,6 +78,20 @@ const AddData = ({navigation}) => {
     }
   }
 
+  async function updateData() {
+    try{
+        await updateDataToDb(fieldInput.firstname.trim(), fieldInput.lastname.trim(), fieldInput.street.trim(), fieldInput.postalCode.trim(), fieldInput.city.trim(), fieldInput.personId);
+    } 
+    catch(err){
+        console.log(err);
+    } 
+    finally{
+        emptyFiels();
+        //Empty fields & go back to Registry page
+    }
+  }
+
+
   const emptyFiels = () => {
     setFieldInput({
         firstname: '',
@@ -68,9 +100,17 @@ const AddData = ({navigation}) => {
         postalCode: '',
         city: '',
       });
-      navigation.navigate('DataRegistry');
+    setErrors("");
+    navigation.navigate('DataRegistry');
   }
-
+  /*
+  if (loading) {
+    return (
+    <View style={styles.container}>
+        <ActivityIndicator size="large" loading={loading} />
+      </View>
+    );
+  } else {*/
   return (
     <View style={styles.mainform}>
       <Text style={styles.textStyleBig}>Please fill in the form</Text>
@@ -131,6 +171,12 @@ const AddData = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+container: {
+flex: 1,
+alignItems: 'center', 
+backgroundColor: '#fff',
+justifyContent: 'center',
+},
   mainform: {
     flex: 1,
     marginTop: 10,
