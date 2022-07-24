@@ -94,6 +94,7 @@ const AddData = ({route, navigation}) => {
 
   const emptyFiels = () => {
     setFieldInput({
+        personId: '',
         firstname: '',
         lastname: '',
         street: '',
@@ -103,14 +104,7 @@ const AddData = ({route, navigation}) => {
     setErrors("");
     navigation.navigate('DataRegistry');
   }
-  /*
-  if (loading) {
-    return (
-    <View style={styles.container}>
-        <ActivityIndicator size="large" loading={loading} />
-      </View>
-    );
-  } else {*/
+
   return (
     <View style={styles.mainform}>
       <Text style={styles.textStyleBig}>Please fill in the form</Text>
