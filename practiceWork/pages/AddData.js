@@ -8,7 +8,7 @@ import {saveDataToDb, fetchPersonData, updateDataToDb} from './../database/db';
 
 const AddData = ({route, navigation}) => {
 
-    const person = route.params.id;
+    const person = route.params == undefined ? null : route.params.id;
 
 // Setting data based on input fields
   const [fieldInput, setFieldInput]= useState({
@@ -20,14 +20,18 @@ const AddData = ({route, navigation}) => {
     city: '',
   });  
 
+  const load = person !== null;
+
   useEffect(() => {
-    fieldChanged(person[0]['id'], "personId")
-    fieldChanged(person[0]['firstname'], "firstname")
-    fieldChanged(person[0]['lastname'], "lastname")
-    fieldChanged(person[0]['street'], "street")
-    fieldChanged(person[0]['postalcode'], "postalCode")
-    fieldChanged(person[0]['city'], "city")
-  }, [route.params.id])
+    if (route.params?.id) {
+        fieldChanged(person[0]['id'], "personId")
+        fieldChanged(person[0]['firstname'], "firstname")
+        fieldChanged(person[0]['lastname'], "lastname")
+        fieldChanged(person[0]['street'], "street")
+        fieldChanged(person[0]['postalcode'], "postalCode")
+        fieldChanged(person[0]['city'], "city")
+    }
+  }, [load]);
 
 //When field changes set data 
   const fieldChanged = (enteredText, field) => {

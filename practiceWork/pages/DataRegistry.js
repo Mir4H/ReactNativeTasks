@@ -17,16 +17,17 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const colors = {
-  pink: '#b39e98',
+  offPink: '#b39e98',
   lightGrey: '#B9B7BD',
   offWhite: '#F5F5F5',
 };
 
 const DataRegistry = ({navigation}) => {
+  const [selected, setSelected] = React.useState(new Map());
   const [registryData, setRegistryData] = useState([]);
   const isVisible = useIsFocused();
   const [ordering, SetOrdering] = useState('firstname');
-
+  
   useEffect(() => {
     readData('id');
   }, [isVisible]);
@@ -34,6 +35,33 @@ const DataRegistry = ({navigation}) => {
   function orderX(x) {
     SetOrdering(x);
     readData(x);
+  }
+  const findInMap = (map, val) => {
+    for (let [k, v] of map) {
+      if (v === val) { 
+        return true; 
+      }
+    }  
+    return false;
+  }
+  
+const onSelect = useCallback(
+    id => {
+      const newSelected = new Map(selected);
+      newSelected.set(id, !selected.get(id));
+
+      setSelected(newSelected);
+    },
+    [selected],
+  );
+
+  const deleteFromMap = () => {
+    for (let [key, value] of selected) {
+        if (value === true) {
+            deleteItem(key);
+            selected.delete(key);
+        }
+      }
   }
 
   async function readData(orderBy) {
@@ -82,75 +110,78 @@ const DataRegistry = ({navigation}) => {
     [swipeRow],
   );
 
-  const renderData = item => {
+  async function deleteItem(itemToDelete) {
+    try {
+      const dbResult = await deleteItemDb(itemToDelete);
+      readData(ordering);
+    } catch (err) {
+      console.log('Error: ' + err);
+    } finally {
+    }
+  }
+
+  async function archiveItem(itemToDelete) {
+    try {
+      const dbResult = await archiveItemDb(itemToDelete);
+      readData(ordering);
+    } catch (err) {
+      console.log('Error: ' + err);
+    } finally {
+    }
+  }
+
+  function Item({ id, firstname, lastname, postalcode, selected, onSelect }) {
     const alertDeleteItem = () => {
-      Alert.alert('Attention!', 'Do you really want to delete item?', [
-        {
-          text: 'Delete',
-          onPress: () => {
-            deleteItem(item.item.id);
+        Alert.alert('Attention!', 'Do you really want to delete item?', [
+          {
+            text: 'Delete',
+            onPress: () => {
+              deleteItem(id);
+            },
           },
-        },
-        {
-          text: 'Archive',
-          onPress: () => {
-            archiveItem(item.item.id);
+          {
+            text: 'Archive',
+            onPress: () => {
+              archiveItem(id);
+            },
           },
-        },
-        {text: 'Cancel', style: 'cancel'},
-      ]);
-    };
-
-    async function deleteItem(itemToDelete) {
-      try {
-        const dbResult = await deleteItemDb(itemToDelete);
-        console.log(itemToDelete);
-        readData(ordering);
-      } catch (err) {
-        console.log('Error: ' + err);
-      } finally {
-      }
-    }
-
-    async function archiveItem(itemToDelete) {
-      try {
-        const dbResult = await archiveItemDb(itemToDelete);
-        console.log(itemToDelete);
-        readData(ordering);
-      } catch (err) {
-        console.log('Error: ' + err);
-      } finally {
-      }
-    }
-
+          {text: 'Cancel', style: 'cancel'},
+        ]);
+      };
+  
+  
     return (
-      <Swipeable
-        key={item.item.id}
-        ref={ref => (swipeRow[item.item.id] = ref)}
-        onSwipeableWillOpen={() => closeRow(item.item.id)}
+        <Swipeable
+        key={id}
+        ref={ref => (swipeRow[id] = ref)}
+        onSwipeableWillOpen={() => closeRow(id)}
         renderRightActions={RenderRight}
         onSwipeableRightOpen={alertDeleteItem}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() =>
-            navigation.navigate('DataDetails', {person: item.item.id})
-          }>
-          <View style={styles.listItemStyle}>
+            navigation.navigate('DataDetails', {person: id})}
+          onLongPress={() => onSelect((id))}
+          style={[
+            styles.listItemStyle,
+            { backgroundColor: selected ? colors.offPink : colors.offWhite },
+          ]}>
             <View style={styles.iconStyle}>
               <Text style={{fontSize: 16, color: '#F5F5F5'}}>
-                {item.item.firstname[0].toUpperCase()}
-                {item.item.lastname[0].toUpperCase()}
+                {firstname[0].toUpperCase()}
+                {lastname[0].toUpperCase()}
               </Text>
             </View>
             <Text style={styles.textStyle}>
-              {item.item.firstname.toUpperCase()}{' '}
-              {item.item.lastname.toUpperCase()} - {item.item.postalcode}
+              {firstname.toUpperCase()}{' '}
+              {lastname.toUpperCase()} - {postalcode}
             </Text>
-          </View>
+          
         </TouchableOpacity>
       </Swipeable>
     );
-  };
+  }
+
 
   return (
     <View style={{flex: 1}}>
@@ -158,15 +189,34 @@ const DataRegistry = ({navigation}) => {
         <FlatList
           style={styles.flatlistStyle}
           data={registryData}
-          renderItem={renderData}
+          extraData={selected}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <Item
+              id={item.id}
+              firstname={item.firstname}
+              lastname={item.lastname}
+              postalcode= {item.postalcode}
+              selected={!!selected.get(item.id)}
+              onSelect={onSelect}
+            />)}
         />
       </View>
+      {findInMap(selected, true) || selected == {} ? (
       <View style={styles.buttons}>
+          <View style={{width: '50%'}}>
+            <Button
+              color={colors.offPink}
+              title="Delete selected"
+              onPress={deleteFromMap}
+            />
+          </View>
+      </View>) : <View style={styles.buttons}>
         <Text style={{fontSize: 16}}>Sort by:</Text>
         {ordering != 'firstname' ? (
           <View style={{width: '30%'}}>
             <Button
-              color={colors.pink}
+              color={colors.offPink}
               title="Firstname"
               onPress={() => orderX('firstname')}
             />
@@ -175,7 +225,7 @@ const DataRegistry = ({navigation}) => {
         {ordering != 'lastname' ? (
           <View style={{width: '30%'}}>
             <Button
-              color={colors.pink}
+              color={colors.offPink}
               title="Lastname"
               onPress={() => orderX('lastname')}
             />
@@ -184,13 +234,13 @@ const DataRegistry = ({navigation}) => {
         {ordering != 'postalcode' ? (
           <View style={{width: '30%'}}>
             <Button
-              color={colors.pink}
+              color={colors.offPink}
               title="Postal Code"
               onPress={() => orderX('postalcode')}
             />
           </View>
         ) : null}
-      </View>
+      </View> }
     </View>
   );
 };
@@ -235,7 +285,7 @@ const styles = StyleSheet.create({
   iconStyle: {
     width: 45,
     height: 45,
-    backgroundColor: colors.pink,
+    backgroundColor: colors.offPink,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
@@ -247,6 +297,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
   },
 });
 export default DataRegistry;
