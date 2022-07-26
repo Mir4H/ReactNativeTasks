@@ -5,11 +5,12 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Alert,
   Text,
 } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
-import {fetchPersonData, deleteItemDb} from './../database/db';
+import {fetchPersonData, deleteItemDb, archiveItemDb} from './../database/db';
 
 const colors = {
   pink: '#b39e98',
@@ -35,6 +36,38 @@ const DataDetails = ({route, navigation}) => {
     } finally {
         
     }
+  }
+
+  const alertDeleteItem = item => {
+
+    const buttons = [ 
+        {text: 'Cancel', style: 'cancel'},
+    {
+        text: 'Delete',
+        onPress: () => {
+          deleteItem(item);
+        },
+      }];
+
+    if (personData[0]['archive'] == 0) {
+        buttons.push({
+            text: 'Archive',
+            onPress: () => {
+              archiveItem(item);
+            },
+          },)
+    }
+    
+    Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
+  };
+
+  async function archiveItem(itemToArchive) {
+    try {
+      const dbResult = await archiveItemDb(itemToArchive);
+      navigation.navigate('Archive');
+    } catch (err) {
+      console.log('Error: ' + err);
+    } 
   }
 
   async function deleteItem(itemToDelete) {
@@ -97,7 +130,7 @@ const DataDetails = ({route, navigation}) => {
         <Button
           color={colors.pink}
           title="Delete"
-          onPress={() => deleteItem(person)}
+          onPress={() => alertDeleteItem(person)}
         /></View>
         <View style={{width: '25%'}}>
         <Button
