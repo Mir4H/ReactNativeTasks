@@ -64,6 +64,15 @@ const onSelect = useCallback(
       }
   }
 
+  const archiveFromMap = () => {
+    for (let [key, value] of selected) {
+        if (value === true) {
+            archiveItem(key);
+            selected.delete(key);
+        }
+      }
+  }
+
   async function readData(orderBy) {
     try {
       const dbResult = await fetchData(orderBy);
@@ -116,18 +125,16 @@ const onSelect = useCallback(
       readData(ordering);
     } catch (err) {
       console.log('Error: ' + err);
-    } finally {
-    }
+    } 
   }
 
-  async function archiveItem(itemToDelete) {
+  async function archiveItem(itemToArchive) {
     try {
-      const dbResult = await archiveItemDb(itemToDelete);
+      const dbResult = await archiveItemDb(itemToArchive);
       readData(ordering);
     } catch (err) {
       console.log('Error: ' + err);
-    } finally {
-    }
+    } 
   }
 
   function Item({ id, firstname, lastname, postalcode, selected, onSelect }) {
@@ -166,8 +173,8 @@ const onSelect = useCallback(
             styles.listItemStyle,
             { backgroundColor: selected ? colors.offPink : colors.offWhite },
           ]}>
-            <View style={styles.iconStyle}>
-              <Text style={{fontSize: 16, color: '#F5F5F5'}}>
+            <View style={[styles.iconStyle, {backgroundColor: selected ? colors.offWhite : colors.offPink}]}>
+              <Text style={{fontSize: 16, color: selected ? colors.offPink : colors.offWhite }}>
                 {firstname[0].toUpperCase()}
                 {lastname[0].toUpperCase()}
               </Text>
@@ -185,6 +192,15 @@ const onSelect = useCallback(
 
   return (
     <View style={{flex: 1}}>
+    {registryData.length < 1 ? (
+        <View style={styles.buttons}>
+        <View style={{width: '50%'}}>
+            <Button
+              color={colors.offPink}
+              title="Add Data"
+              onPress={() => navigation.navigate('AddData')}
+            /></View></View>
+    ) : null }
       <View style={styles.homeStyle}>
         <FlatList
           style={styles.flatlistStyle}
@@ -204,11 +220,18 @@ const onSelect = useCallback(
       </View>
       {findInMap(selected, true) || selected == {} ? (
       <View style={styles.buttons}>
-          <View style={{width: '50%'}}>
+          <View style={{width: '40%'}}>
             <Button
               color={colors.offPink}
               title="Delete selected"
               onPress={deleteFromMap}
+            />
+          </View>
+          <View style={{width: '40%'}}>
+            <Button
+              color={colors.offPink}
+              title="Archive selected"
+              onPress={archiveFromMap}
             />
           </View>
       </View>) : <View style={styles.buttons}>

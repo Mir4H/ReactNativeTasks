@@ -103,7 +103,7 @@ const DataDetails = ({route, navigation}) => {
         <Button
           color={colors.pink}
           title="Update"
-          onPress={() => navigation.navigate('AddData', {id: personData})}
+          onPress={() => navigation.navigate('Update', {id: person})}
         /></View>
       </View>
     </View>

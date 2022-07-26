@@ -23,7 +23,7 @@ const AddData = ({route, navigation}) => {
   const load = person !== null;
 
   useEffect(() => {
-    if (route.params?.id) {
+    if (load) {
         fieldChanged(person[0]['id'], "personId")
         fieldChanged(person[0]['firstname'], "firstname")
         fieldChanged(person[0]['lastname'], "lastname")
