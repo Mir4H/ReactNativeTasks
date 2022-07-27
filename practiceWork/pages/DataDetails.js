@@ -53,7 +53,7 @@ const DataDetails = ({route, navigation}) => {
         buttons.push({
             text: 'Archive',
             onPress: () => {
-              archiveItem(item);
+              archiveItem(1, item);
             },
           },)
     }
@@ -61,9 +61,9 @@ const DataDetails = ({route, navigation}) => {
     Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
   };
 
-  async function archiveItem(itemToArchive) {
+  async function archiveItem(archive, itemToArchive) {
     try {
-      const dbResult = await archiveItemDb(itemToArchive);
+      const dbResult = await archiveItemDb(archive, itemToArchive);
       navigation.navigate('Archive');
     } catch (err) {
       console.log('Error: ' + err);
@@ -136,7 +136,7 @@ const DataDetails = ({route, navigation}) => {
         <Button
           color={colors.pink}
           title="Update"
-          onPress={() => navigation.navigate('Update', {id: person})}
+          onPress={() => navigation.navigate('AddData', {id: personData})}
         /></View>
       </View>
     </View>

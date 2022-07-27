@@ -8,7 +8,7 @@ import {saveDataToDb, fetchPersonData, updateDataToDb} from './../database/db';
 
 const AddData = ({route, navigation}) => {
 
-    const person = route.params == undefined ? null : route.params.id;
+const person = route.params == undefined ? null : route.params.id;
 
 // Setting data based on input fields
   const [fieldInput, setFieldInput]= useState({
@@ -23,7 +23,7 @@ const AddData = ({route, navigation}) => {
   const load = person !== null;
 
   useEffect(() => {
-    if (load) {
+    if (person !== null) {
         fieldChanged(person[0]['id'], "personId")
         fieldChanged(person[0]['firstname'], "firstname")
         fieldChanged(person[0]['lastname'], "lastname")
@@ -31,7 +31,7 @@ const AddData = ({route, navigation}) => {
         fieldChanged(person[0]['postalcode'], "postalCode")
         fieldChanged(person[0]['city'], "city")
     }
-  }, [load]);
+  }, [route.params]);
 
 //When field changes set data 
   const fieldChanged = (enteredText, field) => {
@@ -50,10 +50,10 @@ const AddData = ({route, navigation}) => {
   const checkInput = () => {
     Keyboard.dismiss(); //Close keyboard
     if (!fieldInput.firstname.trim()) { 
-        handleError('Please input firstname', 'firstname')
+        handleError('Please input first name', 'firstname')
     }
     if (!fieldInput.lastname.trim()) {
-        handleError('Please input lastname', 'lastname')
+        handleError('Please input last name', 'lastname')
     }
     if (!fieldInput.postalCode.trim()) {
         handleError('Please input postal code', 'postalCode')
@@ -116,8 +116,8 @@ const AddData = ({route, navigation}) => {
       <ScrollView>
         <View style={styles.formstyle}>
           <InputField 
-          label="Firstname *" 
-          placeholder="Firstname... " 
+          label="First name *" 
+          placeholder="First name... " 
           onChangeText ={(text)=>fieldChanged(text, "firstname")}  
           error={errors.firstname}
           onFocus={() => {
@@ -126,8 +126,8 @@ const AddData = ({route, navigation}) => {
           value={fieldInput.firstname}
           />
           <InputField 
-          label="Lastname *" 
-          placeholder="Lastname... "
+          label="Last name *" 
+          placeholder="Last name... "
           onChangeText ={(text)=>fieldChanged(text, "lastname")} 
           error={errors.lastname}
           onFocus={() => {
@@ -156,7 +156,7 @@ const AddData = ({route, navigation}) => {
           value={fieldInput.city}/>
           <View style={styles.buttonRow}>
             <View style={styles.buttonstyle}>
-              <Button onPress={checkInput} title="Add" />
+              <Button onPress={checkInput} title="Ok" />
             </View>
             <View style={styles.buttonstyle}>
               <Button onPress={emptyFiels} title="Cancel" />

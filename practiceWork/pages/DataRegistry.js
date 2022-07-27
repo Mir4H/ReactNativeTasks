@@ -22,12 +22,13 @@ const colors = {
   offWhite: '#F5F5F5',
 };
 
-const DataRegistry = ({navigation}) => {
+const DataRegistry = ({route, navigation}) => {
   const [selected, setSelected] = React.useState(new Map());
   const [registryData, setRegistryData] = useState([]);
   const isVisible = useIsFocused();
   const [ordering, SetOrdering] = useState('firstname');
-  
+  const prop = route.params == undefined ? 1 : route.params.archive;
+
   useEffect(() => {
     readData('id');
   }, [isVisible]);
@@ -63,6 +64,40 @@ const onSelect = useCallback(
         }
       }
   }
+  const alertDeleteMultiple = () => {
+    const buttons = [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          onPress: () => {
+              deleteFromMap();
+          },
+        }
+      ];
+
+      if (prop == 0) {
+        buttons.push({
+            text: 'Archive',
+            onPress: () => {
+                archiveFromMap();
+            },
+          },)
+    }
+    Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
+  };
+  async function returnMultiple() {
+    for (let [key, value] of selected) {
+        if (value === true) {
+            try {
+                const dbResult = await archiveItemDb(0, key);
+                selected.delete(key);
+                readData(ordering);
+              } catch (err) {
+                console.log('Error: ' + err);
+              } 
+        }
+      }
+  }
 
   const archiveFromMap = () => {
     for (let [key, value] of selected) {
@@ -75,7 +110,7 @@ const onSelect = useCallback(
 
   async function readData(orderBy) {
     try {
-      const dbResult = await fetchData(orderBy);
+      const dbResult = await fetchData(prop, orderBy);
       setRegistryData(dbResult);
     } catch (err) {
       console.log('Error: ' + err);
@@ -130,7 +165,7 @@ const onSelect = useCallback(
 
   async function archiveItem(itemToArchive) {
     try {
-      const dbResult = await archiveItemDb(itemToArchive);
+      const dbResult = await archiveItemDb(1, itemToArchive);
       readData(ordering);
     } catch (err) {
       console.log('Error: ' + err);
@@ -139,21 +174,25 @@ const onSelect = useCallback(
 
   function Item({ id, firstname, lastname, postalcode, selected, onSelect }) {
     const alertDeleteItem = () => {
-        Alert.alert('Attention!', 'Do you really want to delete item?', [
-          {
-            text: 'Delete',
-            onPress: () => {
-              deleteItem(id);
-            },
-          },
-          {
-            text: 'Archive',
-            onPress: () => {
-              archiveItem(id);
-            },
-          },
-          {text: 'Cancel', style: 'cancel'},
-        ]);
+        const buttons = [
+            {text: 'Cancel', style: 'cancel'},
+            {
+              text: 'Delete',
+              onPress: () => {
+                deleteItem(id);
+              },
+            }
+          ];
+    
+          if (prop == 0) {
+            buttons.push({
+                text: 'Archive',
+                onPress: () => {
+                    archiveItem(id);
+                },
+              },)
+        }
+        Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
       };
   
   
@@ -192,7 +231,7 @@ const onSelect = useCallback(
 
   return (
     <View style={{flex: 1}}>
-    {registryData.length < 1 ? (
+    {registryData.length < 1 && prop === 0 ? (
         <View style={styles.buttons}>
         <View style={{width: '50%'}}>
             <Button
@@ -224,16 +263,25 @@ const onSelect = useCallback(
             <Button
               color={colors.offPink}
               title="Delete selected"
-              onPress={deleteFromMap}
+              onPress={alertDeleteMultiple}
             />
           </View>
-          <View style={{width: '40%'}}>
+          {prop === 0 ? (
+            <View style={{width: '40%'}}>
             <Button
               color={colors.offPink}
               title="Archive selected"
               onPress={archiveFromMap}
             />
           </View>
+          ) : <View style={{width: '40%'}}>
+          <Button
+            color={colors.offPink}
+            title="Return selected"
+            onPress={returnMultiple}
+          />
+        </View>
+          }
       </View>) : <View style={styles.buttons}>
         <Text style={{fontSize: 16}}>Sort by:</Text>
         {ordering != 'firstname' ? (

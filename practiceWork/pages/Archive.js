@@ -22,7 +22,7 @@ const colors = {
   offWhite: '#F5F5F5',
 };
 
-const DataRegistry = ({navigation}) => {
+const Archive = ({route, navigation}) => {
   const [selected, setSelected] = React.useState(new Map());
   const [registryData, setRegistryData] = useState([]);
   const isVisible = useIsFocused();
@@ -54,6 +54,31 @@ const onSelect = useCallback(
     },
     [selected],
   );
+  const alertDeleteMultiple = () => {
+    Alert.alert('Attention!', 'Do you really want to delete item?', [
+      {
+        text: 'Delete',
+        onPress: () => {
+            deleteFromMap();
+        },
+      },
+      {text: 'Cancel', style: 'cancel'},
+    ]);
+  };
+
+  async function returnMultiple() {
+    for (let [key, value] of selected) {
+        if (value === true) {
+            try {
+                const dbResult = await archiveItemDb(0, key);
+                selected.delete(key);
+                readData(ordering);
+              } catch (err) {
+                console.log('Error: ' + err);
+              } 
+        }
+      }
+  }
 
   const deleteFromMap = () => {
     for (let [key, value] of selected) {
@@ -66,7 +91,7 @@ const onSelect = useCallback(
 
   async function readData(orderBy) {
     try {
-      const dbResult = await fetchArchiveData(orderBy);
+    const dbResult = await fetchData(1, orderBy);
       setRegistryData(dbResult);
     } catch (err) {
       console.log('Error: ' + err);
@@ -189,11 +214,18 @@ const onSelect = useCallback(
       </View>
       {findInMap(selected, true) || selected == {} ? (
       <View style={styles.buttons}>
-          <View style={{width: '50%'}}>
+          <View style={{width: '40%'}}>
             <Button
               color={colors.offPink}
               title="Delete selected"
-              onPress={deleteFromMap}
+              onPress={alertDeleteMultiple}
+            />
+          </View>
+          <View style={{width: '40%'}}>
+            <Button
+              color={colors.offPink}
+              title="Return selected"
+              onPress={returnMultiple}
             />
           </View>
       </View>) : <View style={styles.buttons}>
@@ -290,4 +322,4 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
 });
-export default DataRegistry;
+export default Archive;

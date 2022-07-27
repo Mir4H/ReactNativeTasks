@@ -66,12 +66,12 @@ export const updateDataToDb = (firstname, lastname, street, postalCode, city, id
     return promise;
   };
 
-export const fetchData = order => {
+export const fetchData = (archive, order) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
-        'select * from ' + tableName + ' where archive = 0 order by ' + order,
-        [],
+        'select * from ' + tableName + ' where archive = ? order by ' + order,
+        [archive],
         (tx, result) => {
           resolve(result.rows.raw());
         },
@@ -140,12 +140,12 @@ export const deleteItemDb = id => {
   return promise;
 };
 
-export const archiveItemDb = id => {
+export const archiveItemDb = (archive, id) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(
         'update ' + tableName + ' set archive=? where id=?;',
-        [1, id],
+        [archive, id],
         () => {
           resolve();
         },

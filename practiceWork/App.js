@@ -21,13 +21,13 @@ const App=()=>{
   return (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="DataRegistry">
-        <Drawer.Screen name="DataRegistry" component={DataRegistry} options={{ title: 'Contacts' }}/>
+        <Drawer.Screen name="DataRegistry" initialParams={{archive: 0}} component={DataRegistry} options={{ title: 'Contacts' }}/>
         <Drawer.Screen name="DataDetails" component={DataDetails} options={{ title: 'Details' }, {drawerItemStyle:{display:'none',}}}/>
-        <Drawer.Screen name="AddData" component={AddData}  options={{ title: 'Add Contact' }}/>
-        <Drawer.Screen name="Archive" component={Archive} options={{ title: 'Archive' }}/>
+        <Drawer.Screen name="AddData" component={AddData} options={{ title: 'Add Contact' }}/>
+        <Drawer.Screen name="Archive" component={DataRegistry} options={{ title: 'Archive' }}/>
       </Drawer.Navigator>
     </NavigationContainer>
   );
 }
 
-export default App;
+export default App;{}
