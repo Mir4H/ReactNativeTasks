@@ -14,38 +14,35 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {fetchData, deleteItemDb, archiveItemDb} from './../database/db';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
+//Defining colors to use in the styles
 const colors = {
-  offPink: '#b39e98',
+  offPink: '#a37c7c',
   lightGrey: '#B9B7BD',
   offWhite: '#F5F5F5',
+  offRed: '#d65151',
 };
 
 const DataRegistry = ({route, navigation}) => {
-  const [selected, setSelected] = React.useState(new Map());
+
+  const [selected, setSelected] = useState(new Map());
   const [registryData, setRegistryData] = useState([]);
   const isVisible = useIsFocused();
   const [ordering, SetOrdering] = useState('firstname');
   const prop = route.params == undefined ? 1 : route.params.archive;
 
+// once the screen is visible read the data & order by id
   useEffect(() => {
     readData('id');
   }, [isVisible]);
 
+// handling the order of the items once a button is clicked. Set the new order and read the data in that order
   function orderX(x) {
     SetOrdering(x);
     readData(x);
   }
-  const findInMap = (map, val) => {
-    for (let [k, v] of map) {
-      if (v === val) { 
-        return true; 
-      }
-    }  
-    return false;
-  }
-  
+
+// handling selection of an item & setting the selection of the item to opposite what it was
 const onSelect = useCallback(
     id => {
       const newSelected = new Map(selected);
@@ -56,6 +53,7 @@ const onSelect = useCallback(
     [selected],
   );
 
+// Deleting selected items from database and selection list
   const deleteFromMap = () => {
     for (let [key, value] of selected) {
         if (value === true) {
@@ -64,7 +62,30 @@ const onSelect = useCallback(
         }
       }
   }
+
+// Mark selected items archived
+  const archiveFromMap = () => {
+    for (let [key, value] of selected) {
+        if (value === true) {
+            archiveItem(key);
+            selected.delete(key);
+        }
+      }
+  }
+
+// Checking if some item is selected 
+  const findInMap = (map, val) => {
+    for (let [k, v] of map) {
+      if (v === val) { 
+        return true; 
+      }
+    }  
+    return false;
+  }
+
+// Alert once multiple items selected and delete button is clicked
   const alertDeleteMultiple = () => {
+    // Buttons that always show on the alert
     const buttons = [
         {text: 'Cancel', style: 'cancel'},
         {
@@ -74,7 +95,7 @@ const onSelect = useCallback(
           },
         }
       ];
-
+      // show also archive button, if on main contact screen
       if (prop == 0) {
         buttons.push({
             text: 'Archive',
@@ -85,8 +106,12 @@ const onSelect = useCallback(
     }
     Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
   };
+
+  // Return selected items from the archive to the main contact screen
   async function returnMultiple() {
+    //Go through all items on selection list
     for (let [key, value] of selected) {
+        // if item is selected modify the archive column of that item in the database and read new data to the screen
         if (value === true) {
             try {
                 const dbResult = await archiveItemDb(0, key);
@@ -99,61 +124,17 @@ const onSelect = useCallback(
       }
   }
 
-  const archiveFromMap = () => {
-    for (let [key, value] of selected) {
-        if (value === true) {
-            archiveItem(key);
-            selected.delete(key);
-        }
-      }
-  }
-
+  // Read data from the database, prop defines if reading main or archived contact data. Order by sort selection and set the registry data, catch any error
   async function readData(orderBy) {
     try {
       const dbResult = await fetchData(prop, orderBy);
       setRegistryData(dbResult);
     } catch (err) {
       console.log('Error: ' + err);
-    } finally {
-    }
+    } 
   }
 
-  const RenderRight = (progress, dragX) => {
-    const scale = dragX.interpolate({
-      inputRange: [-100, 0],
-      outputRange: [1.2, 0.5],
-      extrapolate: 'clamp',
-    });
-
-    const opacity = dragX.interpolate({
-      inputRange: [-100, 1],
-      outputRange: [1, 0],
-      extrapolate: 'clamp',
-    });
-
-    return (
-      <Animated.View style={[styles.deleteStyle, {opacity: opacity}]}>
-        <Animated.Text
-          style={{color: '#fff', fontWeight: '600', transform: [{scale}]}}>
-          Delete
-        </Animated.Text>
-      </Animated.View>
-    );
-  };
-
-  let swipeRow = [],
-    prevOpenRow;
-
-  const closeRow = useCallback(
-    id => {
-      if (prevOpenRow && prevOpenRow !== swipeRow[id]) {
-        prevOpenRow.close();
-      }
-      prevOpenRow = swipeRow[id];
-    },
-    [swipeRow],
-  );
-
+  // delete item from the database 
   async function deleteItem(itemToDelete) {
     try {
       const dbResult = await deleteItemDb(itemToDelete);
@@ -162,7 +143,7 @@ const onSelect = useCallback(
       console.log('Error: ' + err);
     } 
   }
-
+// MArk item to be archived in the database, 1 for archive
   async function archiveItem(itemToArchive) {
     try {
       const dbResult = await archiveItemDb(1, itemToArchive);
@@ -172,10 +153,52 @@ const onSelect = useCallback(
     } 
   }
 
+
+  // Handeling what's shown if item is swiped
+  const RenderRight = (progress, dragX) => {
+    // scale the text
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1.2, 0.5],
+      extrapolate: 'clamp',
+    });
+    // change opacity of the background
+    const opacity = dragX.interpolate({
+      inputRange: [-100, 1],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
+// Shown "under" the list item once it's swiped
+    return (
+      <Animated.View style={[styles.deleteStyle, {opacity: opacity}]}>
+        <Animated.Text
+          style={{color: colors.offWhite, fontWeight: '600', transform: [{scale}]}}>
+          Delete
+        </Animated.Text>
+      </Animated.View>
+    );
+  };
+
+// If an item is swiped and user clicks on cancel button on the alert, the swipe will close
+  let swipedItem = [],
+    prevOpened;
+
+  const closeSwipe = useCallback(
+    id => {
+      if (prevOpened && prevOpened !== swipedItem[id]) {
+        prevOpened.close();
+      }
+      prevOpened = swipedItem[id];
+    },
+    [swipedItem],
+  );
+
+  //Item of the flatlist
   function Item({ id, firstname, lastname, postalcode, selected, onSelect }) {
+    //alerting when deleting on swipe
     const alertDeleteItem = () => {
         const buttons = [
-            {text: 'Cancel', style: 'cancel'},
+            {text: 'Cancel', style: 'cancel', onPress: () => {closeSwipe(-1)}},
             {
               text: 'Delete',
               onPress: () => {
@@ -183,7 +206,7 @@ const onSelect = useCallback(
               },
             }
           ];
-    
+    //show archive option only if on main contacts screen
           if (prop == 0) {
             buttons.push({
                 text: 'Archive',
@@ -199,8 +222,8 @@ const onSelect = useCallback(
     return (
         <Swipeable
         key={id}
-        ref={ref => (swipeRow[id] = ref)}
-        onSwipeableWillOpen={() => closeRow(id)}
+        ref={ref => (swipedItem[id] = ref)}
+        onSwipeableWillOpen={() => closeSwipe(id)}
         renderRightActions={RenderRight}
         onSwipeableRightOpen={alertDeleteItem}>
         <TouchableOpacity
@@ -213,12 +236,12 @@ const onSelect = useCallback(
             { backgroundColor: selected ? colors.offPink : colors.offWhite },
           ]}>
             <View style={[styles.iconStyle, {backgroundColor: selected ? colors.offWhite : colors.offPink}]}>
-              <Text style={{fontSize: 16, color: selected ? colors.offPink : colors.offWhite }}>
+              <Text style={{fontSize: 18, color: selected ? colors.offPink : colors.offWhite }}>
                 {firstname[0].toUpperCase()}
                 {lastname[0].toUpperCase()}
               </Text>
             </View>
-            <Text style={styles.textStyle}>
+            <Text style={[styles.textStyle, {color: selected ? colors.offWhite : colors.offPink}]}>
               {firstname.toUpperCase()}{' '}
               {lastname.toUpperCase()} - {postalcode}
             </Text>
@@ -283,7 +306,7 @@ const onSelect = useCallback(
         </View>
           }
       </View>) : <View style={styles.buttons}>
-        <Text style={{fontSize: 16}}>Sort by:</Text>
+        <Text style={{fontSize: 18, color: colors.offPink}}>Sort by:</Text>
         {ordering != 'firstname' ? (
           <View style={{width: '30%'}}>
             <Button
@@ -351,7 +374,7 @@ const styles = StyleSheet.create({
   textStyle: {
     alignSelf: 'center',
     marginLeft: 20,
-    fontSize: 16,
+    fontSize: 18,
   },
   iconStyle: {
     width: 45,
@@ -365,7 +388,7 @@ const styles = StyleSheet.create({
   deleteStyle: {
     width: 100,
     marginTop: 1,
-    backgroundColor: 'red',
+    backgroundColor: colors.offRed,
     alignItems: 'center',
     justifyContent: 'center',
   },

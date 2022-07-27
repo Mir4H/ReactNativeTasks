@@ -6,6 +6,16 @@ import InputField from './components/InputField';
 import {ScrollView} from 'react-native-gesture-handler';
 import {saveDataToDb, fetchPersonData, updateDataToDb} from './../database/db';
 
+//Defining colors to use in the styles
+const colors = {
+    offPink: '#a37c7c',
+    lightGrey: '#B9B7BD',
+    offWhite: '#F5F5F5',
+    offRed: '#d65151',
+    offBlack: '#2e2c2b',
+  };
+  
+  
 const AddData = ({route, navigation}) => {
 
 const person = route.params == undefined ? null : route.params.id;
@@ -156,10 +166,10 @@ const person = route.params == undefined ? null : route.params.id;
           value={fieldInput.city}/>
           <View style={styles.buttonRow}>
             <View style={styles.buttonstyle}>
-              <Button onPress={checkInput} title="Ok" />
+              <Button color={colors.offPink} onPress={checkInput} title="Ok" />
             </View>
             <View style={styles.buttonstyle}>
-              <Button onPress={emptyFiels} title="Cancel" />
+              <Button color={colors.offPink} onPress={emptyFiels} title="Cancel" />
             </View>
           </View>
         </View>
@@ -172,14 +182,13 @@ const styles = StyleSheet.create({
 container: {
 flex: 1,
 alignItems: 'center', 
-backgroundColor: '#fff',
 justifyContent: 'center',
 },
   mainform: {
     flex: 1,
-    marginTop: 10,
     width: '100%',
     flexDirection: 'column',
+    backgroundColor: colors.offWhite,
   },
   formstyle: {
     marginHorizontal: 15,
@@ -194,15 +203,18 @@ justifyContent: 'center',
     height: 50,
   },
   textStyleBig: {
+    marginTop: 10,
     color: 'black',
     fontSize: 30,
     fontWeight: 'bold',
     marginLeft: 15,
+    color: colors.offBlack,
   },
   textStyleSmall: {
     fontSize: 14,
     marginLeft: 15,
     marginBottom: 15,
+    color: colors.offBlack,
   },
 });
 

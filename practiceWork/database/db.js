@@ -84,23 +84,6 @@ export const fetchData = (archive, order) => {
   return promise;
 };
 
-export const fetchArchiveData = () => {
-  const promise = new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'select * from ' + tableName + ' where archive = 1',
-        [],
-        (tx, result) => {
-          resolve(result.rows.raw());
-        },
-        (tx, err) => {
-          reject(err);
-        },
-      );
-    });
-  });
-  return promise;
-};
 
 export const fetchPersonData = id => {
   const promise = new Promise((resolve, reject) => {

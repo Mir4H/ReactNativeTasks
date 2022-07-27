@@ -12,11 +12,13 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {fetchPersonData, deleteItemDb, archiveItemDb} from './../database/db';
 
+//Defining colors to use in the styles
 const colors = {
-  pink: '#b39e98',
-  lightGrey: '#B9B7BD',
-  offWhite: '#F5F5F5',
-};
+    offPink: '#a37c7c',
+    lightGrey: '#B9B7BD',
+    offWhite: '#F5F5F5',
+    offRed: '#d65151',
+  };
 
 const DataDetails = ({route, navigation}) => {
   const [personData, setPersonData] = useState([]);
@@ -122,19 +124,19 @@ const DataDetails = ({route, navigation}) => {
       <View style={styles.buttons}>
       <View style={{width: '25%'}}>
         <Button
-          color={colors.pink}
+          color={colors.offPink}
           onPress={() => navigation.navigate('DataRegistry')}
           title="Back"
         /></View>
         <View style={{width: '25%'}}>
         <Button
-          color={colors.pink}
+          color={colors.offPink}
           title="Delete"
           onPress={() => alertDeleteItem(person)}
         /></View>
         <View style={{width: '25%'}}>
         <Button
-          color={colors.pink}
+          color={colors.offPink}
           title="Update"
           onPress={() => navigation.navigate('AddData', {id: personData})}
         /></View>
@@ -161,6 +163,7 @@ const styles = StyleSheet.create({
   textStyle: {
     alignSelf: 'center',
     fontSize: 24,
+    color: colors.offPink
   },
   row: {
     flexDirection: 'row',
@@ -177,7 +180,7 @@ const styles = StyleSheet.create({
   iconStyle: {
     width: 80,
     height: 80,
-    backgroundColor: colors.pink,
+    backgroundColor: colors.offPink,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
