@@ -1,14 +1,15 @@
 import React from 'react';
-
 import {openDatabase} from 'react-native-sqlite-storage';
 
+//create database with name people and a table named people
 var db = openDatabase({name: 'people.db'});
 var tableName = 'people';
 
+//create the table in case doesn't exist
 export const init = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
-      //tx.executeSql('DROP TABLE IF EXISTS people', []); //For testing
+      //tx.executeSql('DROP TABLE IF EXISTS people', []); //For testing - empty the database
       tx.executeSql(
         'create table if not exists ' +
           tableName +
@@ -26,6 +27,7 @@ export const init = () => {
   return promise;
 };
 
+//save contacts data to the database
 export const saveDataToDb = (firstname, lastname, street, postalCode, city) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -46,26 +48,35 @@ export const saveDataToDb = (firstname, lastname, street, postalCode, city) => {
   return promise;
 };
 
-export const updateDataToDb = (firstname, lastname, street, postalCode, city, id) => {
-    const promise = new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          'update ' +
-            tableName +
-            ' set firstname=?, lastname=?, street=?, postalcode=?, city=?, archive=? where id=?;',
-          [firstname, lastname, street, postalCode, city, 0, id],
-          () => {
-            resolve();
-          },
-          (_, err) => {
-            reject(err);
-          },
-        );
-      });
+//update existing database item
+export const updateDataToDb = (
+  firstname,
+  lastname,
+  street,
+  postalCode,
+  city,
+  id,
+) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'update ' +
+          tableName +
+          ' set firstname=?, lastname=?, street=?, postalcode=?, city=?, archive=? where id=?;',
+        [firstname, lastname, street, postalCode, city, 0, id],
+        () => {
+          resolve();
+        },
+        (_, err) => {
+          reject(err);
+        },
+      );
     });
-    return promise;
-  };
+  });
+  return promise;
+};
 
+// fetch all data fromm database based on if it's archived or not and in a specific order
 export const fetchData = (archive, order) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -84,7 +95,7 @@ export const fetchData = (archive, order) => {
   return promise;
 };
 
-
+//fetch one contact's data from database
 export const fetchPersonData = id => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -103,8 +114,7 @@ export const fetchPersonData = id => {
   return promise;
 };
 
-
-
+//delete one contact's data from the database
 export const deleteItemDb = id => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -123,6 +133,7 @@ export const deleteItemDb = id => {
   return promise;
 };
 
+//modify archive value of an item in the database
 export const archiveItemDb = (archive, id) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {

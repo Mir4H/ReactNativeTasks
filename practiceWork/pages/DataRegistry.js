@@ -24,26 +24,27 @@ const colors = {
 };
 
 const DataRegistry = ({route, navigation}) => {
-
+  // variables
   const [selected, setSelected] = useState(new Map());
   const [registryData, setRegistryData] = useState([]);
   const isVisible = useIsFocused();
+  // sort by default by first name
   const [ordering, SetOrdering] = useState('firstname');
   const prop = route.params == undefined ? 1 : route.params.archive;
 
-// once the screen is visible read the data & order by id
+  // once the screen is visible read the data & order by id
   useEffect(() => {
     readData('id');
   }, [isVisible]);
 
-// handling the order of the items once a button is clicked. Set the new order and read the data in that order
+  // handling the order of the items once a button is clicked. Set the new order and read the data in that order
   function orderX(x) {
     SetOrdering(x);
     readData(x);
   }
 
-// handling selection of an item & setting the selection of the item to opposite what it was
-const onSelect = useCallback(
+  // handling selection of an item & setting the selection of the item to opposite what it was
+  const onSelect = useCallback(
     id => {
       const newSelected = new Map(selected);
       newSelected.set(id, !selected.get(id));
@@ -53,56 +54,56 @@ const onSelect = useCallback(
     [selected],
   );
 
-// Deleting selected items from database and selection list
+  // Deleting selected items from database and selection list
   const deleteFromMap = () => {
     for (let [key, value] of selected) {
-        if (value === true) {
-            deleteItem(key);
-            selected.delete(key);
-        }
+      if (value === true) {
+        deleteItem(key);
+        selected.delete(key);
       }
-  }
+    }
+  };
 
-// Mark selected items archived
+  // Mark selected items archived
   const archiveFromMap = () => {
     for (let [key, value] of selected) {
-        if (value === true) {
-            archiveItem(key);
-            selected.delete(key);
-        }
+      if (value === true) {
+        archiveItem(key);
+        selected.delete(key);
       }
-  }
+    }
+  };
 
-// Checking if some item is selected 
+  // Checking if some item is selected
   const findInMap = (map, val) => {
     for (let [k, v] of map) {
-      if (v === val) { 
-        return true; 
+      if (v === val) {
+        return true;
       }
-    }  
+    }
     return false;
-  }
+  };
 
-// Alert once multiple items selected and delete button is clicked
+  // Alert once multiple items selected and delete button is clicked
   const alertDeleteMultiple = () => {
     // Buttons that always show on the alert
     const buttons = [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Delete',
-          onPress: () => {
-              deleteFromMap();
-          },
-        }
-      ];
-      // show also archive button, if on main contact screen
-      if (prop == 0) {
-        buttons.push({
-            text: 'Archive',
-            onPress: () => {
-                archiveFromMap();
-            },
-          },)
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Delete',
+        onPress: () => {
+          deleteFromMap();
+        },
+      },
+    ];
+    // show also archive button, if on main contact screen
+    if (prop == 0) {
+      buttons.push({
+        text: 'Archive',
+        onPress: () => {
+          archiveFromMap();
+        },
+      });
     }
     Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
   };
@@ -111,17 +112,17 @@ const onSelect = useCallback(
   async function returnMultiple() {
     //Go through all items on selection list
     for (let [key, value] of selected) {
-        // if item is selected modify the archive column of that item in the database and read new data to the screen
-        if (value === true) {
-            try {
-                const dbResult = await archiveItemDb(0, key);
-                selected.delete(key);
-                readData(ordering);
-              } catch (err) {
-                console.log('Error: ' + err);
-              } 
+      // if item is selected modify the archive column of that item in the database and read new data to the screen
+      if (value === true) {
+        try {
+          const dbResult = await archiveItemDb(0, key);
+          selected.delete(key);
+          readData(ordering);
+        } catch (err) {
+          console.log('Error: ' + err);
         }
       }
+    }
   }
 
   // Read data from the database, prop defines if reading main or archived contact data. Order by sort selection and set the registry data, catch any error
@@ -131,28 +132,27 @@ const onSelect = useCallback(
       setRegistryData(dbResult);
     } catch (err) {
       console.log('Error: ' + err);
-    } 
+    }
   }
 
-  // delete item from the database 
+  // delete item from the database
   async function deleteItem(itemToDelete) {
     try {
       const dbResult = await deleteItemDb(itemToDelete);
       readData(ordering);
     } catch (err) {
       console.log('Error: ' + err);
-    } 
+    }
   }
-// MArk item to be archived in the database, 1 for archive
+  // Mark item to be archived in the database, 1 for archive
   async function archiveItem(itemToArchive) {
     try {
       const dbResult = await archiveItemDb(1, itemToArchive);
       readData(ordering);
     } catch (err) {
       console.log('Error: ' + err);
-    } 
+    }
   }
-
 
   // Handeling what's shown if item is swiped
   const RenderRight = (progress, dragX) => {
@@ -168,18 +168,22 @@ const onSelect = useCallback(
       outputRange: [1, 0],
       extrapolate: 'clamp',
     });
-// Shown "under" the list item once it's swiped
+    // Shown "under" the list item once it's swiped
     return (
       <Animated.View style={[styles.deleteStyle, {opacity: opacity}]}>
         <Animated.Text
-          style={{color: colors.offWhite, fontWeight: '600', transform: [{scale}]}}>
+          style={{
+            color: colors.offWhite,
+            fontWeight: '600',
+            transform: [{scale}],
+          }}>
           Delete
         </Animated.Text>
       </Animated.View>
     );
   };
 
-// If an item is swiped and user clicks on cancel button on the alert, the swipe will close
+  // If an item is swiped and user clicks on cancel button on the alert, the swipe will close
   let swipedItem = [],
     prevOpened;
 
@@ -194,94 +198,122 @@ const onSelect = useCallback(
   );
 
   //Item of the flatlist
-  function Item({ id, firstname, lastname, postalcode, selected, onSelect }) {
-    //alerting when deleting on swipe
+  function Item({id, firstname, lastname, postalcode, selected, onSelect}) {
+    //alerting when deleting by swipe
     const alertDeleteItem = () => {
-        const buttons = [
-            {text: 'Cancel', style: 'cancel', onPress: () => {closeSwipe(-1)}},
-            {
-              text: 'Delete',
-              onPress: () => {
-                deleteItem(id);
-              },
-            }
-          ];
-    //show archive option only if on main contacts screen
-          if (prop == 0) {
-            buttons.push({
-                text: 'Archive',
-                onPress: () => {
-                    archiveItem(id);
-                },
-              },)
-        }
-        Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
-      };
-  
-  
+      const buttons = [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => {
+            closeSwipe(-1);
+          },
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            deleteItem(id);
+          },
+        },
+      ];
+      // show archive option only if on main contacts screen
+      if (prop == 0) {
+        buttons.push({
+          text: 'Archive',
+          onPress: () => {
+            archiveItem(id);
+          },
+        });
+      }
+      Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
+    };
+
     return (
-        <Swipeable
+      // swipeable item
+      <Swipeable
         key={id}
+        //reference in order to close the swipe in case of cancel
         ref={ref => (swipedItem[id] = ref)}
         onSwipeableWillOpen={() => closeSwipe(id)}
+        //show the delete view when swiping
         renderRightActions={RenderRight}
+        //delete (alert) if fully opened by swipe
         onSwipeableRightOpen={alertDeleteItem}>
+        {/*enable touch features*/}
         <TouchableOpacity
+          //touch item opacity
           activeOpacity={0.8}
-          onPress={() =>
-            navigation.navigate('DataDetails', {person: id})}
-          onLongPress={() => onSelect((id))}
+          // click on the item opens details page
+          onPress={() => navigation.navigate('DataDetails', {person: id})}
+          // long press selects or deselects the item
+          onLongPress={() => onSelect(id)}
+          // styling changes based on if selected or not
           style={[
             styles.listItemStyle,
-            { backgroundColor: selected ? colors.offPink : colors.offWhite },
+            {backgroundColor: selected ? colors.offPink : colors.offWhite},
           ]}>
-            <View style={[styles.iconStyle, {backgroundColor: selected ? colors.offWhite : colors.offPink}]}>
-              <Text style={{fontSize: 18, color: selected ? colors.offPink : colors.offWhite }}>
-                {firstname[0].toUpperCase()}
-                {lastname[0].toUpperCase()}
-              </Text>
-            </View>
-            <Text style={[styles.textStyle, {color: selected ? colors.offWhite : colors.offPink}]}>
-              {firstname.toUpperCase()}{' '}
-              {lastname.toUpperCase()} - {postalcode}
+          <View
+            style={[
+              styles.iconStyle,
+              {backgroundColor: selected ? colors.offWhite : colors.offPink},
+            ]}>
+            <Text
+              style={{
+                fontSize: 18,
+                color: selected ? colors.offPink : colors.offWhite,
+              }}>
+              {firstname[0].toUpperCase()}
+              {lastname[0].toUpperCase()}
             </Text>
-          
+          </View>
+          <Text
+            style={[
+              styles.textStyle,
+              {color: selected ? colors.offWhite : colors.offPink},
+            ]}>
+            {firstname.toUpperCase()} {lastname.toUpperCase()} | {postalcode}
+          </Text>
         </TouchableOpacity>
       </Swipeable>
     );
   }
 
-
   return (
     <View style={{flex: 1}}>
-    {registryData.length < 1 && prop === 0 ? (
+      {/*show add contact in case no contacts added yet and screen is main contact screen*/}
+      {registryData.length < 1 && prop === 0 ? (
         <View style={styles.buttons}>
-        <View style={{width: '50%'}}>
+          <View style={{width: '50%'}}>
             <Button
               color={colors.offPink}
-              title="Add Data"
+              title="Add contact"
               onPress={() => navigation.navigate('AddData')}
-            /></View></View>
-    ) : null }
+            />
+          </View>
+        </View>
+      ) : null}
       <View style={styles.homeStyle}>
+        {/*Flatflist defined with data of Registry data, Item is an individual item on the list */}
         <FlatList
           style={styles.flatlistStyle}
           data={registryData}
           extraData={selected}
           keyExtractor={item => item.id}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <Item
               id={item.id}
               firstname={item.firstname}
               lastname={item.lastname}
-              postalcode= {item.postalcode}
+              postalcode={item.postalcode}
               selected={!!selected.get(item.id)}
               onSelect={onSelect}
-            />)}
+            />
+          )}
         />
       </View>
+      {/*If items selected show different buttons */}
       {findInMap(selected, true) || selected == {} ? (
-      <View style={styles.buttons}>
+        <View style={styles.buttons}>
           <View style={{width: '40%'}}>
             <Button
               color={colors.offPink}
@@ -289,56 +321,62 @@ const onSelect = useCallback(
               onPress={alertDeleteMultiple}
             />
           </View>
+          {/*Different second button based on if showing archived or main contacts */}
           {prop === 0 ? (
             <View style={{width: '40%'}}>
-            <Button
-              color={colors.offPink}
-              title="Archive selected"
-              onPress={archiveFromMap}
-            />
-          </View>
-          ) : <View style={{width: '40%'}}>
-          <Button
-            color={colors.offPink}
-            title="Return selected"
-            onPress={returnMultiple}
-          />
+              <Button
+                color={colors.offPink}
+                title="Archive selected"
+                onPress={archiveFromMap}
+              />
+            </View>
+          ) : (
+            <View style={{width: '40%'}}>
+              <Button
+                color={colors.offPink}
+                title="Return selected"
+                onPress={returnMultiple}
+              />
+            </View>
+          )}
         </View>
-          }
-      </View>) : <View style={styles.buttons}>
-        <Text style={{fontSize: 18, color: colors.offPink}}>Sort by:</Text>
-        {ordering != 'firstname' ? (
-          <View style={{width: '30%'}}>
-            <Button
-              color={colors.offPink}
-              title="Firstname"
-              onPress={() => orderX('firstname')}
-            />
-          </View>
-        ) : null}
-        {ordering != 'lastname' ? (
-          <View style={{width: '30%'}}>
-            <Button
-              color={colors.offPink}
-              title="Lastname"
-              onPress={() => orderX('lastname')}
-            />
-          </View>
-        ) : null}
-        {ordering != 'postalcode' ? (
-          <View style={{width: '30%'}}>
-            <Button
-              color={colors.offPink}
-              title="Postal Code"
-              onPress={() => orderX('postalcode')}
-            />
-          </View>
-        ) : null}
-      </View> }
+      ) : (
+        <View style={styles.buttons}>
+          <Text style={{fontSize: 18, color: colors.offPink}}>Sort by:</Text>
+          {/* Showing 2 buttons for ordering, the third is the on selected and shown on the screen and therefore it's hidden */}
+          {ordering != 'firstname' ? (
+            <View style={{width: '30%'}}>
+              <Button
+                color={colors.offPink}
+                title="Firstname"
+                onPress={() => orderX('firstname')}
+              />
+            </View>
+          ) : null}
+          {ordering != 'lastname' ? (
+            <View style={{width: '30%'}}>
+              <Button
+                color={colors.offPink}
+                title="Lastname"
+                onPress={() => orderX('lastname')}
+              />
+            </View>
+          ) : null}
+          {ordering != 'postalcode' ? (
+            <View style={{width: '30%'}}>
+              <Button
+                color={colors.offPink}
+                title="Postal Code"
+                onPress={() => orderX('postalcode')}
+              />
+            </View>
+          ) : null}
+        </View>
+      )}
     </View>
   );
 };
-
+//Styling of the elements
 const styles = StyleSheet.create({
   homeStyle: {
     flex: 12,
@@ -374,7 +412,7 @@ const styles = StyleSheet.create({
   textStyle: {
     alignSelf: 'center',
     marginLeft: 20,
-    fontSize: 18,
+    fontSize: 16,
   },
   iconStyle: {
     width: 45,

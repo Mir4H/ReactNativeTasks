@@ -14,17 +14,19 @@ import {fetchPersonData, deleteItemDb, archiveItemDb} from './../database/db';
 
 //Defining colors to use in the styles
 const colors = {
-    offPink: '#a37c7c',
-    lightGrey: '#B9B7BD',
-    offWhite: '#F5F5F5',
-    offRed: '#d65151',
-  };
-
+  offPink: '#a37c7c',
+  lightGrey: '#B9B7BD',
+  offWhite: '#F5F5F5',
+  offRed: '#d65151',
+};
+//Details screen
 const DataDetails = ({route, navigation}) => {
   const [personData, setPersonData] = useState([]);
   const isVisible = useIsFocused();
+  //info of the person selected
   const person = route.params.person;
 
+  //read the data from database once visible
   useEffect(() => {
     readData();
   }, [isVisible]);
@@ -36,42 +38,42 @@ const DataDetails = ({route, navigation}) => {
     } catch (err) {
       console.log('Error: ' + err);
     } finally {
-        
     }
   }
-
+  // alert in case delete button is clicked, show archive option only if not an archived item
   const alertDeleteItem = item => {
-
-    const buttons = [ 
-        {text: 'Cancel', style: 'cancel'},
-    {
+    const buttons = [
+      {text: 'Cancel', style: 'cancel'},
+      {
         text: 'Delete',
         onPress: () => {
           deleteItem(item);
         },
-      }];
+      },
+    ];
 
     if (personData[0]['archive'] == 0) {
-        buttons.push({
-            text: 'Archive',
-            onPress: () => {
-              archiveItem(1, item);
-            },
-          },)
+      buttons.push({
+        text: 'Archive',
+        onPress: () => {
+          archiveItem(1, item);
+        },
+      });
     }
-    
+
     Alert.alert('Attention!', 'Do you really want to delete item?', buttons);
   };
 
+  //set item archived
   async function archiveItem(archive, itemToArchive) {
     try {
       const dbResult = await archiveItemDb(archive, itemToArchive);
       navigation.navigate('Archive');
     } catch (err) {
       console.log('Error: ' + err);
-    } 
+    }
   }
-
+  //delete item
   async function deleteItem(itemToDelete) {
     try {
       const dbResult = await deleteItemDb(itemToDelete);
@@ -81,7 +83,7 @@ const DataDetails = ({route, navigation}) => {
     } finally {
     }
   }
-
+  //show an icon with initials and contact details on a "card"
   const renderData = item => {
     return (
       <View style={styles.card}>
@@ -111,7 +113,7 @@ const DataDetails = ({route, navigation}) => {
       </View>
     );
   };
-
+  // Show the card and buttons for going back, delete and update, if update is clicked the person's data is passed to the update screen
   return (
     <View style={{flex: 1}}>
       <View style={styles.homeStyle}>
@@ -122,29 +124,32 @@ const DataDetails = ({route, navigation}) => {
         />
       </View>
       <View style={styles.buttons}>
-      <View style={{width: '25%'}}>
-        <Button
-          color={colors.offPink}
-          onPress={() => navigation.navigate('DataRegistry')}
-          title="Back"
-        /></View>
         <View style={{width: '25%'}}>
-        <Button
-          color={colors.offPink}
-          title="Delete"
-          onPress={() => alertDeleteItem(person)}
-        /></View>
+          <Button
+            color={colors.offPink}
+            onPress={() => navigation.navigate('DataRegistry')}
+            title="Back"
+          />
+        </View>
         <View style={{width: '25%'}}>
-        <Button
-          color={colors.offPink}
-          title="Update"
-          onPress={() => navigation.navigate('AddData', {id: personData})}
-        /></View>
+          <Button
+            color={colors.offPink}
+            title="Delete"
+            onPress={() => alertDeleteItem(person)}
+          />
+        </View>
+        <View style={{width: '25%'}}>
+          <Button
+            color={colors.offPink}
+            title="Update"
+            onPress={() => navigation.navigate('AddData', {id: personData})}
+          />
+        </View>
       </View>
     </View>
   );
 };
-
+//Styling
 const styles = StyleSheet.create({
   homeStyle: {
     flex: 10,
@@ -163,19 +168,21 @@ const styles = StyleSheet.create({
   textStyle: {
     alignSelf: 'center',
     fontSize: 24,
-    color: colors.offPink
+    color: colors.offPink,
   },
   row: {
     flexDirection: 'row',
   },
   card: {
-    marginTop: '35%',
-    justifyContent: 'center',
+    marginTop: '25%',
     alignItems: 'center',
     backgroundColor: colors.offWhite,
-    padding: 60,
+    paddingVertical: 50,
+    paddingHorizontal: 40,
+    marginHorizontal: 20,
     shadowColor: '#000',
-    elevation: 5,
+    shadowOpacity: 0.3,
+    elevation: 13,
   },
   iconStyle: {
     width: 80,

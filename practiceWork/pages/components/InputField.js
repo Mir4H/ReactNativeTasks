@@ -10,17 +10,20 @@ const colors = {
     offRed: '#d65151',
     offBlack: '#544f4b',
   };
-  
+
+// Custom Inputfield 
 const InputField = ({label, error, onFocus = () => {}, ...props}) => {
 const [isFocused, setIsFocused] = useState(false);
   return (
     <View style={{marginBottom: 10}}>
       <Text style={style.label}>{label}</Text>
+      {/*Change the border color based on error, focus and non focus */}
       <View
         style={[
           style.inputText,
           {borderColor: error ? colors.offRed : isFocused ? colors.offBlack : colors.offPink},
         ]}>
+            {/*Setting item focused or non focused */}
         <TextInput
           onFocus={() => {
             onFocus();
@@ -33,11 +36,12 @@ const [isFocused, setIsFocused] = useState(false);
           {...props}
         />
       </View>
+      {/*Showing error message*/}
       <Text style={{color: colors.offRed, fontSize: 12}}>{error}</Text>
     </View>
   );
 };
-
+//styling
 const style = StyleSheet.create({
   label: {
     marginBottom: 5,
