@@ -73,12 +73,12 @@ const AddData = ({route, navigation}) => {
     }
     if (!fieldInput.postalCode.trim()) {
       handleError('Please input postal code', 'postalCode');
-    } else {
-      if (fieldInput.personId == '') {
-        saveData();
-      } else {
-        updateData();
-      }
+    } if (fieldInput.firstname.trim() && fieldInput.lastname.trim() && fieldInput.postalCode.trim()) {
+        if (fieldInput.personId == '') {
+            saveData();
+          } else {
+            updateData();
+          }
     }
   };
 
